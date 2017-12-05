@@ -1,0 +1,31 @@
+{
+  "name": "mourgos-admin",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-scripts": "1.0.17",
+    "socket.io": "^2.0.4",
+    "timeago.js": "^3.0.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "proxy": {
+    "/api": {
+      "target": "http://localhost:3000/",
+      "ws": true,
+      "pathRewrite": {
+        "^/api": ""
+      }
+    }
+  },
+  "homepage": "/admin/",
+  "devDependencies": {
+    "@uirouter/visualizer": "^5.0.6"
+  }
+}
