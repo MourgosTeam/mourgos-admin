@@ -19,6 +19,10 @@ function saveToken(token){
   localStorage.setItem('Token', token);
 }
 
+function clearToken(){
+  localStorage.removeItem('Token');
+}
+
 function RequestIt(url, method, body, token){
   url = "/api/" + url;
   
@@ -38,15 +42,15 @@ function RequestIt(url, method, body, token){
   return fetch(url, options).then( (response) => {
     if(!response.ok){
       info(response);
-      throw new Error(response);
+      throw response;
     }
     return response;
   }).catch( (err) => {
     if(err.status && err.status === 403){
       //redirect to login
-      alert("You need to login!");
+      window.location.href = "/login";
     }
-    else throw err;
+    else throw new Error(err);
   });
 }
 
@@ -81,6 +85,7 @@ function Login(username, password){
 }
 
 export default {
+  clearToken,
   GetIt,
   GetItWithToken,
   getToken,

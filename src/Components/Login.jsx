@@ -11,13 +11,15 @@ class Login extends Component {
     console.log(props.resolves);
   }
 
-  login = () => {
+  login = (event) => {
+    event.preventDefault();
     const password = document.getElementById('password').value;
     const username = document.getElementById('username').value;
 
     Net.Login(username, password).then( () => {
-      this.props.resolves.$transition$.router.stateService.go('home');
+      this.props.resolves.$transition$.router.stateService.go('home.dashboard');
     });
+    return false;
   }
 
   render() {
@@ -29,7 +31,7 @@ class Login extends Component {
         </header>
         <div className="container p-t-lg">
         	<div className="col-12 col-lg-4 offset-lg-4">
-        		<form>
+        		<form onSubmit={this.login}>
     				  <div className="form-group">
     				    <label>Username</label>
     				    <input type="text" className="form-control" id="username" placeholder="Username" />
@@ -38,7 +40,7 @@ class Login extends Component {
     				    <label>Password</label>
     				    <input type="password" className="form-control" id="password" placeholder="Password" />
     				  </div>
-    				  <button type="submit" onClick={this.login} className="btn btn-primary">Login</button>
+    				  <button type="submit" className="btn btn-primary">Login</button>
             </form>
         	</div>
         </div>
