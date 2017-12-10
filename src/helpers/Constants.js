@@ -6,8 +6,12 @@ let lineColor = ['','', 'table-primary', 'table-info'];
 lineColor[10] = 'table-success';
 lineColor[99] = 'table-danger';
 
+const gainMultiplier = 0.15;
+const extraCharge = 0.50;
 
 export default {
 	lineColor,
-	statusText
+	statusText,
+	gainMultiplier,
+	extraCharge
 }

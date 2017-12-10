@@ -1,8 +1,9 @@
 import ioClient from 'socket.io-client'
 
-let Socket = ioClient('http://localhost:3000/?id=all', { path: "/socket.io/" });
+//let Socket = ioClient('http://localhost:3000/?id=all', { path: "/socket.io/" });
+let Socket = ioClient('http://mourgos.gr/?id=all', { path: "/api/socket.io/" });
 
-const DEBUG = true;
+const DEBUG = false;
 function info(d){
   DEBUG ? console.log(d): false;
 }

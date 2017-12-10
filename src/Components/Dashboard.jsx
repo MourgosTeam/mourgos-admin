@@ -21,19 +21,24 @@ class OrderLogRow extends Component {
     return [
     <tr key={0} className={clickable + ' ' + Constants.lineColor[this.props.order.Status]} onClick={() => this.toggle(this.props.order.id)}>
       <th scope="row">{this.props.order.id}</th>
-      <td>{this.props.order.ShopName}</td>
+      <td>{this.props.order.ShopName}<br /><small>{this.props.order.ShopPhone}</small></td>
       <td>{this.props.order.Address}<br /><small>{this.props.order.Phone}</small></td>
       <td>{Constants.statusText[this.props.order.Status]}</td>
+      <td>
+        {this.props.order.Total} { this.props.order.Extra ? '+ 0.50' : '' } <br />
+        <small>Κέρδος: { (this.props.order.Total * Constants.gainMultiplier + this.props.order.Extra * 0.5).toFixed(2) }</small>
+      </td>
       <td><span className="need_to_be_rendered" dateTime={this.props.order.PostDate}></span></td>
     </tr>,
     this.props.order.logs.map((log,pos) => {
     const temp = 'logFor'+log.EntityID;
     const tt = new Date(log.created_on);
-    return <tr key={pos+1} className={`log ${temp}`}>
+    return <tr key={pos+1} className={`log table-active ${temp}`}>
       <td></td>
       <td>{log.name}<br /><small>{log.phone}</small></td>
       <td></td>
       <td>{log.Value}</td>
+      <td></td>
       <td><small>{tt.getDate()}/{tt.getMonth()+1}</small> - {tt.getHours()}:{tt.getMinutes()}</td>
     </tr>
     })]
@@ -45,15 +50,19 @@ class Dashboard extends Component {
   constructor(props){
     super(props);
     this.socket = props.resolves.socket;
-    this.socket.on('connect', this.loadOrders);
-    this.socket.on('new-order', this.loadOrders);
-    this.socket.on('assign-order', this.loadOrders);
-    this.socket.on('update-order', this.loadOrders);
+    this.socket.on('connect', () => this.loadOrders());
+    this.socket.on('new-order', () => this.loadOrders());
+    this.socket.on('assign-order', () => this.loadOrders());
+    this.socket.on('update-order', () => this.loadOrders());
 
     this.state = {
       orders: []
     }
 
+    this.totalValue = {
+      sum: 0,
+      gain: 0
+    }
     this.loadOrders();
   }
   
@@ -73,9 +82,26 @@ class Dashboard extends Component {
     return orders;
   }
 
+  calculateSum = (orders) => {
+    let sum = 0;
+    for(var i=0; i < orders.length; i+=1){
+      sum += parseFloat(orders[i].Total);
+    }
+    let gain = sum * 0.15;
+    for(var i=0; i < orders.length; i+=1){
+      gain += Constants.extraCharge * orders[i].Extra;
+    }
+    sum  = sum.toFixed(2);
+    gain = gain.toFixed(2);
+    return {
+      sum,
+      gain
+    };
+  }
   loadOrders = () => {
     Net.GetItWithToken('orders/').then( (data) => {
       this.orders = data;
+      this.totalValue = this.calculateSum(this.orders);
     }).
     then(() => Net.GetItWithToken('orders/logs')).
     then((logs) => this.mixLogs(this.orders, logs)).
@@ -96,6 +122,11 @@ class Dashboard extends Component {
               <th scope="col">Κατάστημα</th>
               <th scope="col">Διεύθυνση</th>
               <th scope="col">Κατάσταση</th>
+              <th scope="col">
+                Κόστος/Κέρδος
+                <br />
+                <small>{this.totalValue.sum} / {this.totalValue.gain}</small>
+              </th>
               <th scope="col">Ώρα</th>
             </tr>
           </thead>
