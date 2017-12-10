@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import Net from '../helpers/net';
-import timeago from 'timeago.js';
 
 import './Template.css';
 
 import {UIView} from '@uirouter/react';
 
 class Template extends Component {
-
-  constructor(props){
-    super(props);
-  }
 
   goTo = (stateName) => {
     this.props.resolves.$transition$.router.stateService.go(stateName);

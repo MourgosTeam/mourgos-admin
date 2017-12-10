@@ -1,11 +1,12 @@
 import ioClient from 'socket.io-client'
 
+
 //let Socket = ioClient('http://localhost:3000/?id=all', { path: "/socket.io/" });
 let Socket = ioClient('http://mourgos.gr/?id=all', { path: "/api/socket.io/" });
 
 const DEBUG = false;
 function info(d){
-  DEBUG ? console.log(d): false;
+  return DEBUG ? console.log(d): false;
 }
 
 function getToken(){
@@ -61,8 +62,8 @@ function GetIt(url){
 
 function GetItWithToken(url){
   const token = getToken();
-  return RequestIt(url, 'GET', null, token).
-         then((response) => response.json());
+  return RequestIt(url, 'GET', null, token)
+         .then((response) => response.json());
 }
 
 function PostIt(url, body){
@@ -71,8 +72,8 @@ function PostIt(url, body){
 
 function PostItWithToken(url, body){
   const token = getToken();
-  return RequestIt(url, 'POST', body, token).
-         then((response) => response.json());
+  return RequestIt(url, 'POST', body, token)
+         .then((response) => response.json());
 }
 
 function Login(username, password){
