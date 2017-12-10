@@ -84,11 +84,11 @@ class Dashboard extends Component {
 
   calculateSum = (orders) => {
     let sum = 0;
-    for(var i=0; i < orders.length; i+=1){
+    for(let i=0; i < orders.length; i+=1){
       sum += parseFloat(orders[i].Total);
     }
     let gain = sum * 0.15;
-    for(var i=0; i < orders.length; i+=1){
+    for(let i=0; i < orders.length; i+=1){
       gain += Constants.extraCharge * orders[i].Extra;
     }
     sum  = sum.toFixed(2);
