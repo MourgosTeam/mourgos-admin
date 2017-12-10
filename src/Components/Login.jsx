@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 
-import DataLayer from '../helpers/DAL.jsx'
 import Net from '../helpers/net.js'
 
 const whiteLogo = '/images/mourgos-logo-white.png';

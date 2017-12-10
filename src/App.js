@@ -5,11 +5,6 @@ import {router} from './router.config.js';
 
 
 class App extends Component {
-
-  constructor(props){
-    super(props);
-  }
-
   render() {
     return (
       <UIRouter router={router}>

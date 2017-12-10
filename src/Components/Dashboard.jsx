@@ -76,10 +76,10 @@ class Dashboard extends Component {
   loadOrders = () => {
     Net.GetItWithToken('orders/').then( (data) => {
       this.orders = data;
-    }).
-    then(() => Net.GetItWithToken('orders/logs')).
-    then((logs) => this.mixLogs(this.orders, logs)).
-    then((mixedData) => {
+    })
+    .then(() => Net.GetItWithToken('orders/logs'))
+    .then((logs) => this.mixLogs(this.orders, logs))
+    .then((mixedData) => {
       this.setState({
         orders: mixedData
       });
