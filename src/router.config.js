@@ -1,7 +1,7 @@
 import {UIRouterReact, servicesPlugin, pushStateLocationPlugin} from '@uirouter/react';
 
 //add visualizer
-//import {visualizer} from '@uirouter/visualizer';
+import {visualizer} from '@uirouter/visualizer';
 
 import appStates from './states';
 
@@ -21,4 +21,4 @@ router.urlService.rules.initial({ state: 'login' });
 //router.start();
 
 // Setup the state visualizer
-//visualizer(router);
+visualizer(router);
