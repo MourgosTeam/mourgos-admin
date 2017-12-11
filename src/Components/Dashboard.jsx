@@ -102,10 +102,10 @@ class Dashboard extends Component {
     Net.GetItWithToken('orders/').then( (data) => {
       this.orders = data;
       this.totalValue = this.calculateSum(this.orders);
-    }).
-    then(() => Net.GetItWithToken('orders/logs')).
-    then((logs) => this.mixLogs(this.orders, logs)).
-    then((mixedData) => {
+    })
+    .then(() => Net.GetItWithToken('orders/logs'))
+    .then((logs) => this.mixLogs(this.orders, logs))
+    .then((mixedData) => {
       this.setState({
         orders: mixedData
       });
