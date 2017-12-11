@@ -22,7 +22,7 @@ class OrderLogRow extends Component {
     <tr key={0} className={clickable + ' ' + Constants.lineColor[this.props.order.Status]} onClick={() => this.toggle(this.props.order.id)}>
       <th scope="row">{this.props.order.id}</th>
       <td>{this.props.order.ShopName}<br /><small>{this.props.order.ShopPhone}</small></td>
-      <td>{this.props.order.Address}<br /><small>{this.props.order.Phone}</small></td>
+      <td>{this.props.order.Address}<br /><small>{this.props.order.Name}, {this.props.order.Koudouni}, {this.props.order.Phone}</small></td>
       <td>{Constants.statusText[this.props.order.Status]}</td>
       <td>
         {this.props.order.Total} { this.props.order.Extra ? '+ 0.50' : '' } <br />
