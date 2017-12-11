@@ -103,7 +103,7 @@ class Dashboard extends Component {
       this.orders = data;
       this.totalValue = this.calculateSum(this.orders);
     })
-    .then(() => Net.GetItWithToken('orders/logs'))
+    .then(() => Net.GetItWithToken('orders/logs/'))
     .then((logs) => this.mixLogs(this.orders, logs))
     .then((mixedData) => {
       this.setState({
