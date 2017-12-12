@@ -71,7 +71,7 @@ class Template extends Component {
           <li className="nav-item">
             <span className="nav-link" onClick={this.logout}>Logout</span>
           </li>
-          <li style={{padding: 8}}>
+          <li className="nav-item">
             <label className="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0">
               <input type="checkbox" 
                      className="custom-control-input"
