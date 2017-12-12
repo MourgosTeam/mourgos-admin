@@ -10,13 +10,15 @@ class Template extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      isSiteOpen: false
+    };
 
 
-    Net.GetItWithToken('globals/MourgosIsLive/').then((data) => {
+    Net.GetItWithToken('globals/MourgosIsLive').then((data) => {
       this.setState({
         isSiteOpen: data.Value === "1"
-      });
+      })
     });
   }
 
@@ -70,7 +72,7 @@ class Template extends Component {
             <span className="nav-link" onClick={this.logout}>Logout</span>
           </li>
           <li style={{padding: 8}}>
-            <div className="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0">
+            <label className="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0">
               <input type="checkbox" 
                      className="custom-control-input"
                      onChange={this.toggleSite}
@@ -79,7 +81,7 @@ class Template extends Component {
                      value={this.state.isSiteOpen ? 'on' : 'off'} />
               <span className="custom-control-indicator"></span>
               <span className="custom-control-description">Ο μουργος ειναι {this.state.isSiteOpen ? 'ανοιχτός':'κλειστός'}!</span>
-            </div>
+            </label>
           </li>
         </ul>
         <UIView />
