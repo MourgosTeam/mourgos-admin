@@ -15,7 +15,13 @@ router.plugin(pushStateLocationPlugin);
 appStates.forEach(state => router.stateRegistry.register(state));
 
 // Global config for router
-router.urlService.rules.initial({ state: 'login' });
+router.urlService.config.baseHref('/admin/');
+
+router.urlService.rules.initial({ 
+	state: 'login' 
+});
+
+
 
 // Start the router
 //router.start();
