@@ -40,6 +40,14 @@ class OrderLogRow extends Component {
         </small>
       </td>
       <td>
+        {this.props.order.Hashtag ? 
+          <span>
+            Κουπόνι : {this.props.order.Hashtag} <br />
+            <small>Έκπτωση : - {parseFloat(this.props.order.HashtagFormula).toFixed(2)}</small>
+          </span>
+        : ''}
+      </td>
+      <td>
         {this.props.order.Total} { this.props.order.Extra ? '+ 0.50' : '' } <br />
         <small>Κέρδος: { (this.props.order.Total * Constants.gainMultiplier + this.props.order.Extra * 0.5).toFixed(2) }</small>
       </td>

@@ -2,7 +2,7 @@ import ioClient from 'socket.io-client'
 
 
 //let Socket = ioClient('http://localhost:3000/?id=all', { path: "/socket.io/" });
-let Socket = ioClient('https://mourgos.gr/?id=all', { path: "/api/socket.io/" });
+let Socket = ioClient('/?id=all', { path: "/api/socket.io/" });
 Socket.on('connect', function() {
    console.log("socket connect!");
 });
