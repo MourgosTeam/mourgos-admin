@@ -17,6 +17,7 @@ class OrderLogRow extends Component {
   }
 
   render() {
+    const dtime = new Date(this.props.order.PostDate);
     const clickable = this.props.order.logs.length > 0 ? 'pointer' : '';
     return [
     <tr key={0} className={clickable + ' ' + Constants.lineColor[this.props.order.Status]} onClick={() => this.toggle(this.props.order.id)}>
@@ -28,7 +29,10 @@ class OrderLogRow extends Component {
         {this.props.order.Total} { this.props.order.Extra ? '+ 0.50' : '' } <br />
         <small>Κέρδος: { (this.props.order.Total * Constants.gainMultiplier + this.props.order.Extra * 0.5).toFixed(2) }</small>
       </td>
-      <td><span className="need_to_be_rendered" dateTime={this.props.order.PostDate}></span></td>
+      <td>
+        <span>{dtime.format("hh:mm")}</span><br />
+        <span className="need_to_be_rendered" dateTime={this.props.order.PostDate}></span>
+      </td>
     </tr>,
     this.props.order.logs.map((log,pos) => {
     const temp = 'logFor'+log.EntityID;
