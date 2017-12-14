@@ -19,12 +19,26 @@ class OrderLogRow extends Component {
   render() {
     const dtime = new Date(this.props.order.PostDate);
     const clickable = this.props.order.logs.length > 0 ? 'pointer' : '';
+    let instate = false,fresh,last;
+    if (this.props.order.logs[0] && this.props.order.logs[1]) {
+      fresh = new Date(this.props.order.logs[0].created_on);
+      last = new Date(this.props.order.logs[1].created_on);
+      instate = new Date(fresh - last);
+      if( instate.getTime() / 1000 < 60 ) {
+        instate = false;
+      }
+    }
     return [
     <tr key={0} className={clickable + ' ' + Constants.lineColor[this.props.order.Status]} onClick={() => this.toggle(this.props.order.id)}>
       <th scope="row">{this.props.order.id}</th>
       <td>{this.props.order.ShopName}<br /><small>{this.props.order.ShopPhone}</small></td>
       <td>{this.props.order.Address}<br /><small>{this.props.order.Name}, {this.props.order.Koudouni}, {this.props.order.Phone}</small></td>
-      <td>{Constants.statusText[this.props.order.Status]}</td>
+      <td>
+        {Constants.statusText[this.props.order.Status]}<br />
+        <small>
+          {instate && 'for ' + parseInt(instate.getTime() / 1000 / 60, 10) + ' minutes'}
+        </small>
+      </td>
       <td>
         {this.props.order.Total} { this.props.order.Extra ? '+ 0.50' : '' } <br />
         <small>Κέρδος: { (this.props.order.Total * Constants.gainMultiplier + this.props.order.Extra * 0.5).toFixed(2) }</small>
@@ -37,13 +51,24 @@ class OrderLogRow extends Component {
     this.props.order.logs.map((log,pos) => {
     const temp = 'logFor'+log.EntityID;
     const tt = new Date(log.created_on);
+    let prevLog = this.props.order.logs[pos+1];
+    let instate = false;
+    if (prevLog) {
+      instate = new Date(tt - new Date(prevLog.created_on));
+      if( instate.getTime() / 1000 < 60 ) {
+        instate = false;
+      }
+    }
     return <tr key={pos+1} className={`log table-active ${temp}`}>
       <td></td>
       <td>{log.name}<br /><small>{log.phone}</small></td>
       <td></td>
-      <td>{log.Value}</td>
+      <td>
+      {log.Value}<br />
+      <small>{instate && 'for ' + parseInt(instate.getTime() / 1000 / 60, 10) + ' minutes'}</small>
+      </td>
       <td></td>
-      <td><small>{tt.getDate()}/{tt.getMonth()+1}</small> - {tt.getHours()}:{tt.getMinutes()}</td>
+      <td><small>{tt.getDate()}/{tt.getMonth()+1}</small> - {tt.format('hh:mm')}</td>
     </tr>
     })]
   }  
