@@ -21,10 +21,10 @@ class OrderLogRow extends Component {
     const clickable = this.props.order.logs.length > 0 ? 'pointer' : '';
     let instate = false,fresh,last;
     if (this.props.order.logs[0] && this.props.order.logs[1]) {
-      fresh = new Date(this.props.order.logs[0].created_on);
-      last = new Date(this.props.order.logs[1].created_on);
+      fresh = new Date();
+      last = new Date(this.props.order.logs[0].created_on);
       instate = new Date(fresh - last);
-      if( instate.getTime() / 1000 < 60 ) {
+      if( instate.getTime() / 1000 < 60 || instate.getTime() / 1000 > 12000 ) {
         instate = false;
       }
     }
@@ -51,11 +51,11 @@ class OrderLogRow extends Component {
     this.props.order.logs.map((log,pos) => {
     const temp = 'logFor'+log.EntityID;
     const tt = new Date(log.created_on);
-    let prevLog = this.props.order.logs[pos+1];
+    let prevLog = pos === 0 ? new Date() : new Date(this.props.order.logs[pos-1].created_on);
     let instate = false;
     if (prevLog) {
-      instate = new Date(tt - new Date(prevLog.created_on));
-      if( instate.getTime() / 1000 < 60 ) {
+      instate = new Date(prevLog - tt);
+      if( instate.getTime() / 1000 < 60 || instate.getTime() / 1000 > 12000 ) {
         instate = false;
       }
     }
