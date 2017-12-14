@@ -3,6 +3,42 @@ import ioClient from 'socket.io-client'
 
 //let Socket = ioClient('http://localhost:3000/?id=all', { path: "/socket.io/" });
 let Socket = ioClient('https://mourgos.gr/?id=all', { path: "/api/socket.io/" });
+Socket.on('connect', function() {
+   console.log("socket connect!");
+});
+
+Socket.on('connect_error', function() {
+   console.log(" connect_error");
+});
+
+Socket.on('connect_timeout', function() {
+   console.log("connect_timeout");
+});
+
+Socket.on('error', function() {
+   console.log("  socket error!");
+});
+
+Socket.on('disconnect', function() {
+   console.log("disconnect!");
+});
+
+Socket.on('reconnect', function() {
+   console.log("Sorry, socket reconnect!");
+});
+
+Socket.on('reconnect_attempt', function() {
+   console.log("Sorry, socket reconnect_attempt!");
+});
+Socket.on('reconnecting', function() {
+   console.log("Sorry, socket reconnecting!");
+});
+Socket.on('reconnect_error', function() {
+   console.log("Sorry, socket reconnect_error!");
+});
+Socket.on('reconnect_failed', function() {
+   console.log("Sorry, socket reconnect_failed!");
+});
 
 const DEBUG = false;
 function info(d){
