@@ -159,6 +159,7 @@ class Dashboard extends Component {
               <th scope="col">Κατάστημα</th>
               <th scope="col">Διεύθυνση</th>
               <th scope="col">Κατάσταση</th>
+              <th scope="col">Κουπόνι</th>
               <th scope="col">
                 Κόστος/Κέρδος
                 <br />
