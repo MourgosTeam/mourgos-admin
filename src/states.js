@@ -3,6 +3,7 @@ import Template from './Components/Template.jsx'
 import Dashboard from './Components/Dashboard.jsx'
 import Login from './Components/Login.jsx'
 import Users from './Components/Users.jsx'
+import Campaigns from './Components/Campaigns.jsx'
 
 export default [
 {
@@ -44,6 +45,11 @@ export default [
   name : 'home.users',
   url  : '/users',
   component: Users
+},
+{
+  name : 'home.campaigns',
+  url  : '/campaigns',
+  component: Campaigns
 }
 // {
 //     token: "catalogue",
