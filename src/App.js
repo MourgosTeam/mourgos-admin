@@ -3,6 +3,7 @@ import './App.css';
 import {UIRouter, UIView} from '@uirouter/react';
 import {router} from './router.config.js';
 
+import './helpers/stringformat.min.js'
 
 class App extends Component {
   render() {

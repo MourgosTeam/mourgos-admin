@@ -4,6 +4,7 @@ import ioClient from 'socket.io-client'
 let Socket = ioClient('/?id=all', { path: "/socket.io/" });
 //let Socket = ioClient('http://mourgos.gr/?id=all', { path: "/api/socket.io/" });
 
+
 const DEBUG = false;
 function info(d){
   return DEBUG ? console.log(d): false;
