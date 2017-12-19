@@ -1,6 +1,6 @@
 {
   "name": "mourgos-admin",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "private": true,
   "dependencies": {
     "@uirouter/react": "^0.5.4",
