@@ -21,9 +21,8 @@ class Campaigns extends Component {
   }
   
   changeCampaign = (id, event) => {
-    const MaxUsages = event.target.value;
     const body = {
-      maxUsages: MaxUsages
+      [event.target.id]: event.target.value
     };
     Net.PostItWithToken('campaigns/edit/'+id, body).then( (data) => {
       window.location.href = window.location.href;
@@ -67,9 +66,9 @@ class Campaigns extends Component {
               <tr key={index}>
                 <th scope="row">{campaign.id}</th>
                 <td>{campaign.Name}</td>
-                <td>{campaign.Formula}</td>
+                <td><input type="text" id="Formula" defaultValue={campaign.Formula} onBlur={(e) => this.changeCampaign(campaign.id, e)} /></td>
                 <td>{campaign.Hashtag}</td>
-                <td>{campaign.CurrentUsages} / <input type="text" placeholder="" defaultValue={campaign.MaxUsages} onBlur={(e) => this.changeCampaign(campaign.id, e)} /></td>
+                <td>{campaign.CurrentUsages} / <input type="text" id="MaxUsages" placeholder="" defaultValue={campaign.MaxUsages} onBlur={(e) => this.changeCampaign(campaign.id, e)} /></td>
               </tr>
           )}
           </tbody>
