@@ -5,8 +5,10 @@
   "dependencies": {
     "@uirouter/react": "^0.5.4",
     "bootstrap": "^3.3.7",
+    "google-map-react": "^0.26.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-google-maps": "^9.4.3",
     "react-scripts": "1.0.17",
     "socket.io": "^2.0.4",
     "timeago.js": "^3.0.2"
