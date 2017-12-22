@@ -4,6 +4,7 @@ import Dashboard from './Components/Dashboard.jsx'
 import Login from './Components/Login.jsx'
 import Users from './Components/Users.jsx'
 import Campaigns from './Components/Campaigns.jsx'
+import MapView from './Components/MapView.jsx'
 
 export default [
 {
@@ -50,6 +51,11 @@ export default [
   name : 'home.campaigns',
   url  : '/campaigns',
   component: Campaigns
+},
+{
+  name : 'home.map',
+  url  : '/map',
+  component: MapView
 }
 // {
 //     token: "catalogue",

@@ -2,7 +2,6 @@ import {UIRouterReact, servicesPlugin, pushStateLocationPlugin} from '@uirouter/
 
 //add visualizer
 //import {visualizer} from '@uirouter/visualizer';
-
 import appStates from './states';
 
 // Create a new instance of the Router
@@ -20,8 +19,6 @@ router.urlService.config.baseHref('/admin/');
 router.urlService.rules.initial({ 
 	state: 'login' 
 });
-
-
 
 // Start the router
 //router.start();
