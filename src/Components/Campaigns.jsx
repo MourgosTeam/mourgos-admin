@@ -66,6 +66,7 @@ class Campaigns extends Component {
               <tr key={index}>
                 <th scope="row">{campaign.id}</th>
                 <td>{campaign.Name}</td>
+
                 <td><input type="text" id="Formula" defaultValue={campaign.Formula} onBlur={(e) => this.changeCampaign(campaign.id, e)} /></td>
                 <td>{campaign.Hashtag}</td>
                 <td>{campaign.CurrentUsages} / <input type="text" id="MaxUsages" placeholder="" defaultValue={campaign.MaxUsages} onBlur={(e) => this.changeCampaign(campaign.id, e)} /></td>

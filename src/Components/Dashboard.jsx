@@ -77,7 +77,7 @@ class OrderLogRow extends Component {
       </td>
       <td></td>
       <td></td>
-      <td><small>{tt.getDate()}/{tt.getMonth()+1}</small> - {tt.getHours()}:{tt.getMinutes()}</td>
+      <td><small>{tt.getDate()}/{tt.getMonth()+1}</small> - {tt.format('hh:mm')}</td>
     </tr>
     })]
   }  
