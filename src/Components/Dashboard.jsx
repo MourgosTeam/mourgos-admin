@@ -6,6 +6,16 @@ import './Dashboard.css';
 
 import Constants from '../helpers/Constants';
 
+import DatePicker from 'material-ui/DatePicker';
+import TimePicker from 'material-ui/TimePicker';
+
+import 'rc-slider/assets/index.css';
+import Slider from 'rc-slider';
+import Tooltip from 'rc-tooltip';
+const Handle = Slider.Handle;
+const wrapperStyle = { width: 400, margin: 50 };
+
+
 class OrderLogRow extends Component {
 
   toggle = (id) => {
@@ -52,7 +62,7 @@ class OrderLogRow extends Component {
         <small>Κέρδος: { (this.props.order.Total * Constants.gainMultiplier + this.props.order.Extra * 0.5).toFixed(2) }</small>
       </td>
       <td>
-        <span>{dtime.format("hh:mm")}</span><br />
+        <span>{dtime.format("HH:mm")}</span><br />
         <span className="need_to_be_rendered" dateTime={this.props.order.PostDate}></span>
       </td>
     </tr>,
@@ -77,12 +87,157 @@ class OrderLogRow extends Component {
       </td>
       <td></td>
       <td></td>
-      <td><small>{tt.getDate()}/{tt.getMonth()+1}</small> - {tt.format('hh:mm')}</td>
+      <td><small>{tt.getDate()}/{tt.getMonth()+1}</small> - {tt.format('HH:mm')}</td>
     </tr>
     })]
   }  
 }
 
+class CoinCaluclator extends Component {
+  constructor(props) {
+    super(props);
+
+    this.today = new Date(Date.now());
+    this.state = {
+      orders: props.orders,
+      profits: {},
+      shop: -1,
+      dates: {
+        mindate: new Date(),
+        mintime: new Date(),
+        maxdate: new Date(),
+        maxtime: new Date()
+      }
+    };
+  }
+
+  handleSlider = (props) => {
+    const { value, dragging, index, ...restProps } = props;
+    
+    let order = this.state.orders[value-1];
+    let temp = value-1;
+    if(order) {
+      const dt = new Date(order.PostDate);
+      temp = dt.format("dd/MM HH:mm");
+    }
+    return (
+      <Tooltip
+        prefixCls="rc-slider-tooltip"
+        overlay={temp}
+        visible={dragging}
+        placement="top"
+        key={index}
+      >
+        <Handle value={value} {...restProps} />
+      </Tooltip>
+    );
+  }
+  
+  filterCollection = (shop, sdate, edate) => {
+    let newarr = [];
+    for (let i=0; i < this.props.orders.length; i = i + 1) {
+      if ( (!shop || shop == -1 || this.props.orders[i].CatalogueId == shop)
+          && (!sdate || this.props.orders[i].PostDate > sdate)
+          && (!edate || this.props.orders[i].PostDate < edate)) {
+        newarr.push(this.props.orders[i]);
+      }
+    }
+    return newarr;
+  }
+
+  selectShop = (shop) => {
+    let coll = this.filterCollection(shop);
+    this.setState({
+      shop: shop,
+      orders: coll
+    });
+  }
+
+  slide = (value) => {
+    let sum = 0;
+    var mindatetime = new Date(this.state.dates.mindate.getFullYear(), this.state.dates.mindate.getMonth(), this.state.dates.mindate.getDate(), 
+                   this.state.dates.mintime.getHours(), this.state.dates.mintime.getMinutes(), this.state.dates.mintime.getSeconds())
+                   .toISOString();
+    var maxdatetime = new Date(this.state.dates.maxdate.getFullYear(), this.state.dates.maxdate.getMonth(), this.state.dates.maxdate.getDate(), 
+                   this.state.dates.maxtime.getHours(), this.state.dates.maxtime.getMinutes(), this.state.dates.maxtime.getSeconds())
+                   .toISOString();
+    let calculatorarr = this.filterCollection(this.state.shop, mindatetime, maxdatetime);
+    let total = calculateSum(calculatorarr.slice(0, value));
+    this.setState({
+      profits: total,
+      metadata: {
+
+      }
+    });
+  }
+
+  handle = (n, p) => {
+    let ndates = this.state.dates;
+    ndates[n] = p;
+    var mindatetime = new Date(ndates.mindate.getFullYear(), ndates.mindate.getMonth(), ndates.mindate.getDate(), 
+                   ndates.mintime.getHours(), ndates.mintime.getMinutes(), ndates.mintime.getSeconds())
+                   .toISOString();
+    var maxdatetime = new Date(ndates.maxdate.getFullYear(), ndates.maxdate.getMonth(), ndates.maxdate.getDate(), 
+                   ndates.maxtime.getHours(), ndates.maxtime.getMinutes(), ndates.maxtime.getSeconds())
+                   .toISOString();
+
+    let arr = this.filterCollection(this.state.shop, mindatetime, maxdatetime);
+    this.setState({
+      dates: ndates,
+      orders: arr
+    });
+  }
+
+  setTheDate = (v) => {
+    let ndates = this.state.dates;
+    ndates['mindate'] = new Date(this.today.getTime());
+    ndates['mindate'].setDate(this.today.getDate() + v);
+    this.handle('mindate', ndates['mindate']);
+  }
+
+  render() {
+    return  [<div className="coin-calculator" key="1">
+              <Slider min={0} max={this.state.orders.length}
+                      handle={this.handleSlider} onChange={(v) => this.slide(v)}/>
+              <select className="form-control" defaultValue={-1} onChange={ (e) => this.selectShop(e.target.value) }>
+                <option value={-1}>All</option>
+                {
+                  this.props.shops.map( (shop) =>
+                    <option value={shop.id} key={shop.id}>{shop.Name}</option>
+                  )
+                }
+              </select>
+              <span> Τζίρος: {this.state.profits.sum}  <br />Κέρδος: {this.state.profits.gain}</span>
+            </div>,
+            <div className="coin-calculator" key="2">
+              <DatePicker hintText="Min Date" autoOk={true} value={this.state.dates.mindate} onChange={(n,p) => this.handle('mindate', p)}/>
+              <TimePicker hintText="Time" autoOk={true} value={this.state.dates.mintime} onChange={(n,p) => this.handle('mintime', p)}/>
+              <DatePicker hintText="Max Date" autoOk={true} value={this.state.dates.maxdate} onChange={(n,p) => this.handle('maxdate', p)}/>
+              <TimePicker hintText="Time" autoOk={true} value={this.state.dates.maxtime} onChange={(n,p) => this.handle('maxtime', p)}/>
+              <button className="btn btn-sm" onClick={() => this.setTheDate(-1)}>Απο χθές</button>
+              <button className="btn btn-sm" onClick={() => this.setTheDate(-7)}>Τελευταία εβδομάδα</button> 
+              <button className="btn btn-sm" onClick={() => this.setTheDate(-30)}>30 ημέρες</button> 
+            </div>
+            ];
+  }
+
+}
+let calculateSum = (orders) => {
+  let sum = 0;
+  for(let i=0; i < orders.length; i+=1){
+    sum += parseFloat(orders[i].Total);
+  }
+  let gain = sum * Constants.gainMultiplier;
+  for(let i=0; i < orders.length; i+=1){
+    gain += Constants.extraCharge * orders[i].Extra;
+  }
+  sum  = sum.toFixed(2);
+  gain = gain.toFixed(2);
+  return {
+    sum,
+    gain
+  };
+}
 class Dashboard extends Component {
 
   constructor(props){
@@ -94,13 +249,15 @@ class Dashboard extends Component {
     this.socket.on('update-order', () => this.loadOrders());
 
     this.state = {
-      orders: []
+      orders: [],
+      shops: []
     }
 
     this.totalValue = {
       sum: 0,
       gain: 0
     }
+    this.loadCatalogues();
     this.loadOrders();
   }
   
@@ -120,26 +277,21 @@ class Dashboard extends Component {
     return orders;
   }
 
-  calculateSum = (orders) => {
-    let sum = 0;
-    for(let i=0; i < orders.length; i+=1){
-      sum += parseFloat(orders[i].Total);
-    }
-    let gain = sum * 0.15;
-    for(let i=0; i < orders.length; i+=1){
-      gain += Constants.extraCharge * orders[i].Extra;
-    }
-    sum  = sum.toFixed(2);
-    gain = gain.toFixed(2);
-    return {
-      sum,
-      gain
-    };
+  
+
+  loadCatalogues = () => {
+    Net.GetItWithToken('catalogues/').then( (data) => {
+      console.log(data);
+      this.setState({
+        shops: data
+      })
+    });
   }
+
   loadOrders = () => {
     Net.GetItWithToken('orders/').then( (data) => {
       this.orders = data;
-      this.totalValue = this.calculateSum(this.orders);
+      this.totalValue = calculateSum(this.orders);
     })
     .then(() => Net.GetItWithToken('orders/logs/'))
     .then((logs) => this.mixLogs(this.orders, logs))
@@ -150,9 +302,12 @@ class Dashboard extends Component {
     });
   }
 
+
+
   render() {
     return (
       <div className="App">
+        <CoinCaluclator orders={this.state.orders} shops={this.state.shops} />
         <table className="table table-hover">
           <thead>
             <tr>
