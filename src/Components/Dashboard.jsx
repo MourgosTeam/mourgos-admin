@@ -16,7 +16,6 @@ const Handle = Slider.Handle;
 
 
 class OrderLogRow extends Component {
-
   toggle = (id) => {
     const text = ".logFor" + id;
     var elems = document.querySelectorAll(text);
@@ -163,9 +162,7 @@ class CoinCaluclator extends Component {
     let total = calculateSum(calculatorarr.slice(0, value));
     this.setState({
       profits: total,
-      metadata: {
-
-      }
+      metadata: {}
     });
   }
 
