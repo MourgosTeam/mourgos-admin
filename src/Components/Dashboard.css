@@ -5,3 +5,18 @@
 .log{
 	display: none;
 }
+.coin-calculator {
+    display: -ms-flexbox;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    justify-content: space-around;
+}
+.coin-calculator select {
+	width: 300px;
+}
+.coin-calculator .rc-slider {
+	min-width: 400px;
+	max-width: 400px;
+    margin: 12px;
+}
