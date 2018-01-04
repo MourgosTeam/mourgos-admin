@@ -13,7 +13,6 @@ import 'rc-slider/assets/index.css';
 import Slider from 'rc-slider';
 import Tooltip from 'rc-tooltip';
 const Handle = Slider.Handle;
-const wrapperStyle = { width: 400, margin: 50 };
 
 
 class OrderLogRow extends Component {
@@ -136,7 +135,7 @@ class CoinCaluclator extends Component {
   filterCollection = (shop, sdate, edate) => {
     let newarr = [];
     for (let i=0; i < this.props.orders.length; i = i + 1) {
-      if ( (!shop || shop == -1 || this.props.orders[i].CatalogueId == shop)
+      if ( (!shop || parseInt(shop, 10) === -1 || parseInt(this.props.orders[i].CatalogueId,10) === parseInt(shop, 10) )
           && (!sdate || this.props.orders[i].PostDate > sdate)
           && (!edate || this.props.orders[i].PostDate < edate)) {
         newarr.push(this.props.orders[i]);
@@ -154,7 +153,6 @@ class CoinCaluclator extends Component {
   }
 
   slide = (value) => {
-    let sum = 0;
     var mindatetime = new Date(this.state.dates.mindate.getFullYear(), this.state.dates.mindate.getMonth(), this.state.dates.mindate.getDate(), 
                    this.state.dates.mintime.getHours(), this.state.dates.mintime.getMinutes(), this.state.dates.mintime.getSeconds())
                    .toISOString();
