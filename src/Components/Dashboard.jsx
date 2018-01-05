@@ -65,28 +65,28 @@ class OrderLogRow extends Component {
       </td>
     </tr>,
     this.props.order.logs.map((log,pos) => {
-    const temp = 'logFor'+log.EntityID;
-    const tt = new Date(log.created_on);
-    let prevLog = pos === 0 ? new Date() : new Date(this.props.order.logs[pos-1].created_on);
-    let instate = false;
-    if (prevLog) {
-      instate = new Date(prevLog - tt);
-      if( instate.getTime() / 1000 < 60 || instate.getTime() / 1000 > 12000 ) {
-        instate = false;
+      const temp = 'logFor'+log.EntityID;
+      const tt = new Date(log.created_on);
+      let prevLog = pos === 0 ? new Date() : new Date(this.props.order.logs[pos-1].created_on);
+      let instate = false;
+      if (prevLog) {
+        instate = new Date(prevLog - tt);
+        if( instate.getTime() / 1000 < 60 || instate.getTime() / 1000 > 12000 ) {
+          instate = false;
+        }
       }
-    }
-    return <tr key={pos+1} className={`log table-active ${temp}`}>
-      <td></td>
-      <td>{log.name}<br /><small>{log.phone}</small></td>
-      <td></td>
-      <td>
-      {log.Value}<br />
-      <small>{instate && 'for ' + parseInt(instate.getTime() / 1000 / 60, 10) + ' minutes'}</small>
-      </td>
-      <td></td>
-      <td></td>
-      <td><small>{tt.getDate()}/{tt.getMonth()+1}</small> - {tt.format('HH:mm')}</td>
-    </tr>
+      return <tr key={pos+1} className={`log table-active ${temp}`}>
+        <td></td>
+        <td>{log.name}<br /><small>{log.phone}</small></td>
+        <td></td>
+        <td>
+        {log.Value}<br />
+        <small>{instate && 'for ' + parseInt(instate.getTime() / 1000 / 60, 10) + ' minutes'}</small>
+        </td>
+        <td></td>
+        <td></td>
+        <td><small>{tt.getDate()}/{tt.getMonth()+1}</small> - {tt.format('HH:mm')}</td>
+      </tr>
     })]
   }  
 }
@@ -97,7 +97,7 @@ class CoinCaluclator extends Component {
 
     this.today = new Date(Date.now());
     this.state = {
-      orders: props.orders,
+      orders: [],
       profits: {},
       shop: -1,
       dates: {
@@ -107,6 +107,7 @@ class CoinCaluclator extends Component {
         maxtime: new Date()
       }
     };
+    setTimeout(() => this.setTheDate(-1), 1000);
   }
 
   handleSlider = (props) => {
@@ -202,7 +203,7 @@ class CoinCaluclator extends Component {
                   )
                 }
               </select>
-              <span> Τζίρος: {this.state.profits.sum}  <br />Κέρδος: {this.state.profits.gain}</span>
+              <span> Τζίρος: {this.state.profits.sum}  <br />Κέρδος: { this.state.profits.netgain }  <br />Κουπόνια: {this.state.profits.coupons}</span>
             </div>,
             <div className="coin-calculator" key="2">
               <DatePicker hintText="Min Date" autoOk={true} value={this.state.dates.mindate} onChange={(n,p) => this.handle('mindate', p)}/>
@@ -228,16 +229,21 @@ let calculateSum = (orders) => {
   }
   let coupons = 0;
   for(let i=0; i < orders.length; i+=1){
-    coupons += orders[i].HashtagDiscount;
+    const value = parseFloat(orders[i].Total) + Constants.extraCharge * orders[i].Extra;
+    const disc = parseFloat(orders[i].HashtagFormula) || 0;
+    coupons += (disc < value) ? disc : value;
   }
 
   sum  = sum.toFixed(2);
   gain = gain.toFixed(2);
   coupons = coupons.toFixed(2);
+  let netgain = gain - coupons;
+  netgain = netgain.toFixed(2);
   return {
-    sum,
+    coupons,
     gain,
-    coupons
+    netgain,
+    sum
   };
 }
 class Dashboard extends Component {

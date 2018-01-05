@@ -15,7 +15,7 @@
     "timeago.js": "^3.0.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "cross-env PORT=3002 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
@@ -31,6 +31,7 @@
   },
   "homepage": "/admin/",
   "devDependencies": {
-    "@uirouter/visualizer": "^5.0.6"
+    "@uirouter/visualizer": "^5.0.6",
+    "cross-env": "^5.1.3"
   }
 }
