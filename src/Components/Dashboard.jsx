@@ -226,11 +226,18 @@ let calculateSum = (orders) => {
   for(let i=0; i < orders.length; i+=1){
     gain += Constants.extraCharge * orders[i].Extra;
   }
+  let coupons = 0;
+  for(let i=0; i < orders.length; i+=1){
+    coupons += orders[i].HashtagDiscount;
+  }
+
   sum  = sum.toFixed(2);
   gain = gain.toFixed(2);
+  coupons = coupons.toFixed(2);
   return {
     sum,
-    gain
+    gain,
+    coupons
   };
 }
 class Dashboard extends Component {
