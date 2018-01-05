@@ -145,7 +145,14 @@ class CoinCaluclator extends Component {
   }
 
   selectShop = (shop) => {
-    let coll = this.filterCollection(shop);
+    const ndates = this.state.dates;
+    const mindatetime = new Date(ndates.mindate.getFullYear(), ndates.mindate.getMonth(), ndates.mindate.getDate(), 
+                   ndates.mintime.getHours(), ndates.mintime.getMinutes(), ndates.mintime.getSeconds())
+                   .toISOString();
+    const maxdatetime = new Date(ndates.maxdate.getFullYear(), ndates.maxdate.getMonth(), ndates.maxdate.getDate(), 
+                   ndates.maxtime.getHours(), ndates.maxtime.getMinutes(), ndates.maxtime.getSeconds())
+                   .toISOString();
+    let coll = this.filterCollection(shop, mindatetime, maxdatetime);
     this.setState({
       shop: shop,
       orders: coll
@@ -203,11 +210,20 @@ class CoinCaluclator extends Component {
                   )
                 }
               </select>
-              <span> Τζίρος: {this.state.profits.sum}  <br />Κέρδος: { this.state.profits.netgain }  <br />Κουπόνια: {this.state.profits.coupons}</span>
+              <span> Τζίρος: {this.state.profits.sum} 
+               <br />
+               <small>
+                ( {(1-Constants.gainMultiplier)*100}% -> {this.state.profits.sum * (1 - Constants.gainMultiplier) || 0} 
+                | {Constants.gainMultiplier*100}% -> {this.state.profits.sum * Constants.gainMultiplier || 0}) 
+               </small>
+              <br />Κέρδος: { this.state.profits.netgain }  
+              <br />Κουπόνια: {this.state.profits.coupons}</span>
             </div>,
             <div className="coin-calculator" key="2">
+              Ημερομηνία και ώρα από: 
               <DatePicker hintText="Min Date" autoOk={true} value={this.state.dates.mindate} onChange={(n,p) => this.handle('mindate', p)}/>
               <TimePicker hintText="Time" autoOk={true} value={this.state.dates.mintime} onChange={(n,p) => this.handle('mintime', p)}/>
+              Ημερομηνία και ώρα μέχρι: 
               <DatePicker hintText="Max Date" autoOk={true} value={this.state.dates.maxdate} onChange={(n,p) => this.handle('maxdate', p)}/>
               <TimePicker hintText="Time" autoOk={true} value={this.state.dates.maxtime} onChange={(n,p) => this.handle('maxtime', p)}/>
               <button className="btn btn-sm" onClick={() => this.setTheDate(-1)}>Απο χθές</button>
