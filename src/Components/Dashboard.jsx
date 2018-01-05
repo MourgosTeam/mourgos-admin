@@ -60,8 +60,8 @@ class OrderLogRow extends Component {
         <small>Κέρδος: { (this.props.order.Total * Constants.gainMultiplier + this.props.order.Extra * 0.5).toFixed(2) }</small>
       </td>
       <td>
-        <span>{dtime.format("HH:mm")}</span><br />
-        <span className="need_to_be_rendered" dateTime={this.props.order.PostDate}></span>
+        <span>{dtime.format("HH:mm")}</span><br /><small>{dtime.format("dd/MM")}</small><br />
+        <small className="need_to_be_rendered" dateTime={this.props.order.PostDate}></small>
       </td>
     </tr>,
     this.props.order.logs.map((log,pos) => {
@@ -135,7 +135,8 @@ class CoinCaluclator extends Component {
   filterCollection = (shop, sdate, edate) => {
     let newarr = [];
     for (let i=0; i < this.props.orders.length; i = i + 1) {
-      if ( (!shop || parseInt(shop, 10) === -1 || parseInt(this.props.orders[i].CatalogueId,10) === parseInt(shop, 10) )
+      if ( parseInt(this.props.orders[i].Status,10) === 10 
+          && (!shop  || parseInt(shop, 10) === -1 || parseInt(this.props.orders[i].CatalogueId,10) === parseInt(shop, 10) )
           && (!sdate || this.props.orders[i].PostDate > sdate)
           && (!edate || this.props.orders[i].PostDate < edate)) {
         newarr.push(this.props.orders[i]);
