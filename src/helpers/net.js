@@ -51,6 +51,7 @@ function RequestIt(url, method, body, token){
   }).catch( (err) => {
     if(err.status && err.status === 403){
       //redirect to login
+      localStorage.removeItem("Token");
       window.location.href = "/admin/login";
     }
     else throw new Error(err);
