@@ -54,7 +54,9 @@ function RequestIt(url, method, body, token){
       localStorage.removeItem("Token");
       window.location.href = "/admin/login";
     }
-    else throw new Error(err);
+    else {
+      console.log(err);
+    } 
   });
 }
 
