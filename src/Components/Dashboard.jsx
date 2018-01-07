@@ -100,6 +100,7 @@ class CoinCaluclator extends Component {
       orders: [],
       profits: {},
       shop: -1,
+      courier: -1,
       dates: {
         mindate: new Date(),
         mintime: new Date(),
@@ -158,6 +159,12 @@ class CoinCaluclator extends Component {
       orders: coll
     });
   }
+  selectCourier = (courier) => {
+    this.setState({
+      courier: courier
+    });
+    this.slide(this.state.orders.length);
+  }
 
   slide = (value) => {
     var mindatetime = new Date(this.state.dates.mindate.getFullYear(), this.state.dates.mindate.getMonth(), this.state.dates.mindate.getDate(), 
@@ -167,7 +174,7 @@ class CoinCaluclator extends Component {
                    this.state.dates.maxtime.getHours(), this.state.dates.maxtime.getMinutes(), this.state.dates.maxtime.getSeconds())
                    .toISOString();
     let calculatorarr = this.filterCollection(this.state.shop, mindatetime, maxdatetime);
-    let total = calculateSum(calculatorarr.slice(0, value));
+    let total = calculateSum(calculatorarr.slice(0, value), this.state.courier);
     this.setState({
       profits: total,
       metadata: {}
@@ -210,14 +217,22 @@ class CoinCaluclator extends Component {
                   )
                 }
               </select>
+              <select className="form-control" onChange={ (e) => this.selectCourier(e.target.value) }>
+                {
+                  this.props.couriers.map( (courier) =>
+                    <option value={courier.id} key={courier.id}>{courier.name}</option>
+                  )
+                }
+              </select>
               <span> Τζίρος: {this.state.profits.sum} 
                <br />
                <small>
-                ( {(1-Constants.gainMultiplier)*100}% -> {this.state.profits.sum * (1 - Constants.gainMultiplier) || 0} 
-                | {Constants.gainMultiplier*100}% -> {this.state.profits.sum * Constants.gainMultiplier || 0}) 
+                ( {(1-Constants.gainMultiplier)*100}% -> {(this.state.profits.sum * (1 - Constants.gainMultiplier)).toFixed(2) || 0} 
+                | {Constants.gainMultiplier*100}% -> {(this.state.profits.sum * Constants.gainMultiplier).toFixed(2) || 0}) 
                </small>
               <br />Κέρδος: { this.state.profits.netgain }  
-              <br />Κουπόνια: {this.state.profits.coupons}</span>
+              <br />Κουπόνια: {this.state.profits.coupons}
+              <br />Courier: {this.state.profits.courier}</span>
             </div>,
             <div className="coin-calculator" key="2">
               Ημερομηνία και ώρα από: 
@@ -234,32 +249,39 @@ class CoinCaluclator extends Component {
   }
 
 }
-let calculateSum = (orders) => {
+let calculateSum = (orders, courierID) => {
   let sum = 0;
-  for(let i=0; i < orders.length; i+=1){
-    sum += parseFloat(orders[i].Total);
-  }
-  let gain = sum * Constants.gainMultiplier;
-  for(let i=0; i < orders.length; i+=1){
-    gain += Constants.extraCharge * orders[i].Extra;
-  }
   let coupons = 0;
+  let gain = 0;
+  let courier = 0;
   for(let i=0; i < orders.length; i+=1){
-    const value = parseFloat(orders[i].Total) + Constants.extraCharge * orders[i].Extra;
+    const tsum = parseFloat(orders[i].Total);
+    const tgain = Constants.extraCharge * orders[i].Extra;
+    const value = tsum + tgain;
     const disc = parseFloat(orders[i].HashtagFormula) || 0;
-    coupons += (disc < value) ? disc : value;
+    const coupon = (disc < value) ? disc : value;
+  
+    sum += tsum;
+    gain += tgain;
+    coupons += coupon;
+    if (parseInt(orders[i].DeliveryID,10) === parseInt(courierID,10)) {
+      courier += value - coupon;
+    }
   }
 
+
+  gain = (sum * Constants.gainMultiplier + gain).toFixed(2);
   sum  = sum.toFixed(2);
-  gain = gain.toFixed(2);
   coupons = coupons.toFixed(2);
   let netgain = gain - coupons;
   netgain = netgain.toFixed(2);
+  courier = courier.toFixed(2);
   return {
     coupons,
     gain,
     netgain,
-    sum
+    sum,
+    courier
   };
 }
 class Dashboard extends Component {
@@ -274,7 +296,8 @@ class Dashboard extends Component {
 
     this.state = {
       orders: [],
-      shops: []
+      shops: [],
+      couriers: []
     }
 
     this.totalValue = {
@@ -282,6 +305,7 @@ class Dashboard extends Component {
       gain: 0
     }
     this.loadCatalogues();
+    this.loadCouriers();
     this.loadOrders();
   }
   
@@ -312,6 +336,15 @@ class Dashboard extends Component {
     });
   }
 
+  loadCouriers = () => {
+    Net.GetItWithToken('admin/couriers/').then( (data) => {
+      console.log(data);
+      this.setState({
+        couriers: data
+      })
+    });
+  }
+
   loadOrders = () => {
     Net.GetItWithToken('orders/').then( (data) => {
       this.orders = data;
@@ -331,7 +364,7 @@ class Dashboard extends Component {
   render() {
     return (
       <div className="App">
-        <CoinCaluclator orders={this.state.orders} shops={this.state.shops} />
+        <CoinCaluclator orders={this.state.orders} shops={this.state.shops} couriers={this.state.couriers}/>
         <table className="table table-hover">
           <thead>
             <tr>
