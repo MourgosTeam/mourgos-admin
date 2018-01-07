@@ -224,7 +224,7 @@ class CoinCaluclator extends Component {
                   )
                 }
               </select>
-              <span> Τζίρος: {this.state.profits.sum} 
+              <span> Τζίρος: {this.state.profits.sum} + {this.state.profits.extras}
                <br />
                <small>
                 ( {(1-Constants.gainMultiplier)*100}% -> {(this.state.profits.sum * (1 - Constants.gainMultiplier)).toFixed(2) || 0} 
@@ -254,13 +254,15 @@ let calculateSum = (orders, courierID) => {
   let coupons = 0;
   let gain = 0;
   let courier = 0;
+  let extras = 0;
   for(let i=0; i < orders.length; i+=1){
     const tsum = parseFloat(orders[i].Total);
     const tgain = Constants.extraCharge * orders[i].Extra;
     const value = tsum + tgain;
     const disc = parseFloat(orders[i].HashtagFormula) || 0;
     const coupon = (disc < value) ? disc : value;
-  
+    
+    extras += tgain;
     sum += tsum;
     gain += tgain;
     coupons += coupon;
@@ -269,7 +271,7 @@ let calculateSum = (orders, courierID) => {
     }
   }
 
-
+  extras = extras.toFixed(2);
   gain = (sum * Constants.gainMultiplier + gain).toFixed(2);
   sum  = sum.toFixed(2);
   coupons = coupons.toFixed(2);
@@ -278,6 +280,7 @@ let calculateSum = (orders, courierID) => {
   courier = courier.toFixed(2);
   return {
     coupons,
+    extras,
     gain,
     netgain,
     sum,
