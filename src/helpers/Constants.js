@@ -8,8 +8,10 @@ lineColor[99] = 'table-danger';
 
 const gainMultiplier = 0.15;
 const extraCharge = 0.50;
+const alertDelay = 10;
 
 export default {
+	alertDelay,
 	lineColor,
 	statusText,
 	gainMultiplier,
