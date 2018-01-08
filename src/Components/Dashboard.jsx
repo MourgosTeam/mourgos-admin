@@ -9,6 +9,8 @@ import Constants from '../helpers/Constants';
 import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
 
+import Hash from 'object-hash';
+
 import 'rc-slider/assets/index.css';
 import Slider from 'rc-slider';
 import Tooltip from 'rc-tooltip';
@@ -96,23 +98,70 @@ class CoinCaluclator extends Component {
     super(props);
 
     this.today = new Date(Date.now());
+    this.tomorrow = new Date(this.today.getTime());
+    this.tomorrow.setDate(this.today.getDate() + 1);
     this.state = {
       orders: [],
       profits: {},
-      shop: -1,
-      dates: {
+      filters: {
         mindate: new Date(),
         mintime: new Date(),
-        maxdate: new Date(),
-        maxtime: new Date()
+        maxdate: this.tomorrow,
+        maxtime: this.tomorrow,
+        shop: -1,
+        courier: -1,
+        slider: 0
       }
     };
     setTimeout(() => this.setTheDate(-1), 1000);
   }
 
+  // Custom setFilters used in the same way as setState but under state.filters
+  setFilters = (obj) => {
+    let filters = this.state.filters || {};
+    Object.assign(filters, obj);
+    this.setState({
+      filters: filters
+    });
+  }
+
+  componentDidUpdate() {
+    this.updateCarefully();
+    console.log(this.state.filters);
+  }
+
+  updateCarefully = () => { 
+    let filters = this.state.filters;
+    let hash = Hash(filters);
+    // Catch loop
+    if(this.filtering === hash)return;
+    this.filtering = hash;
+
+    const ndates = filters;
+    const mindatetime = new Date(ndates.mindate.getFullYear(), ndates.mindate.getMonth(), ndates.mindate.getDate(), 
+                   ndates.mintime.getHours(), ndates.mintime.getMinutes(), ndates.mintime.getSeconds())
+                   .toISOString();
+    const maxdatetime = new Date(ndates.maxdate.getFullYear(), ndates.maxdate.getMonth(), ndates.maxdate.getDate(), 
+                   ndates.maxtime.getHours(), ndates.maxtime.getMinutes(), ndates.maxtime.getSeconds())
+                   .toISOString();
+    let coll = this.filterCollection(filters.shop, mindatetime, maxdatetime);
+    let arr = coll.slice(0, filters.slider);
+    let total = calculateSum(arr, filters.courier);
+
+    // Event onFilteredData
+    if (filters.fireEvents)
+      this.props.onFilteredData(arr);
+    else
+      this.props.onFilteredData(this.props.orders);
+
+    this.setState({
+      orders: coll,
+      profits: total
+    });
+  }
+  
   handleSlider = (props) => {
     const { value, dragging, index, ...restProps } = props;
-    
     let order = this.state.orders[value-1];
     let temp = value-1;
     if(order) {
@@ -131,12 +180,11 @@ class CoinCaluclator extends Component {
       </Tooltip>
     );
   }
-  
+
   filterCollection = (shop, sdate, edate) => {
     let newarr = [];
     for (let i=0; i < this.props.orders.length; i = i + 1) {
-      if ( parseInt(this.props.orders[i].Status,10) === 10 
-          && (!shop  || parseInt(shop, 10) === -1 || parseInt(this.props.orders[i].CatalogueId,10) === parseInt(shop, 10) )
+      if (   (!shop || parseInt(shop, 10) === -1 || parseInt(this.props.orders[i].CatalogueId,10) === parseInt(shop, 10) )
           && (!sdate || this.props.orders[i].PostDate > sdate)
           && (!edate || this.props.orders[i].PostDate < edate)) {
         newarr.push(this.props.orders[i]);
@@ -144,56 +192,45 @@ class CoinCaluclator extends Component {
     }
     return newarr;
   }
-
   selectShop = (shop) => {
-    let coll = this.filterCollection(shop);
-    this.setState({
-      shop: shop,
-      orders: coll
+    this.setFilters({
+      shop: shop
     });
   }
-
+  selectCourier = (courier) => {
+    this.setFilters({
+      courier: courier
+    });
+  }
   slide = (value) => {
-    var mindatetime = new Date(this.state.dates.mindate.getFullYear(), this.state.dates.mindate.getMonth(), this.state.dates.mindate.getDate(), 
-                   this.state.dates.mintime.getHours(), this.state.dates.mintime.getMinutes(), this.state.dates.mintime.getSeconds())
-                   .toISOString();
-    var maxdatetime = new Date(this.state.dates.maxdate.getFullYear(), this.state.dates.maxdate.getMonth(), this.state.dates.maxdate.getDate(), 
-                   this.state.dates.maxtime.getHours(), this.state.dates.maxtime.getMinutes(), this.state.dates.maxtime.getSeconds())
-                   .toISOString();
-    let calculatorarr = this.filterCollection(this.state.shop, mindatetime, maxdatetime);
-    let total = calculateSum(calculatorarr.slice(0, value));
-    this.setState({
-      profits: total,
-      metadata: {}
+    this.setFilters({
+      slider: value
     });
   }
-
   handle = (n, p) => {
-    let ndates = this.state.dates;
-    ndates[n] = p;
-    var mindatetime = new Date(ndates.mindate.getFullYear(), ndates.mindate.getMonth(), ndates.mindate.getDate(), 
-                   ndates.mintime.getHours(), ndates.mintime.getMinutes(), ndates.mintime.getSeconds())
-                   .toISOString();
-    var maxdatetime = new Date(ndates.maxdate.getFullYear(), ndates.maxdate.getMonth(), ndates.maxdate.getDate(), 
-                   ndates.maxtime.getHours(), ndates.maxtime.getMinutes(), ndates.maxtime.getSeconds())
-                   .toISOString();
-
-    let arr = this.filterCollection(this.state.shop, mindatetime, maxdatetime);
-    this.setState({
-      dates: ndates,
-      orders: arr
+    this.setFilters({
+      [n]: p
     });
   }
 
   setTheDate = (v) => {
-    let ndates = this.state.dates;
+    let ndates = this.state.filters;
     ndates['mindate'] = new Date(this.today.getTime());
     ndates['mindate'].setDate(this.today.getDate() + v);
-    this.handle('mindate', ndates['mindate']);
+    this.setFilters({
+      mindate: ndates['mindate']
+    });
+  }
+  
+  toggleFireEvents = () => {
+    this.setFilters({
+      fireEvents: !this.state.filters.fireEvents
+    });
   }
 
   render() {
     return  [<div className="coin-calculator" key="1">
+              <button className="update-btn btn btn-secondary" onClick={() => this.toggleFireEvents()}>{this.state.filters.fireEvents ? 'Free List' : 'Update List'}</button>
               <Slider min={0} max={this.state.orders.length}
                       handle={this.handleSlider} onChange={(v) => this.slide(v)}/>
               <select className="form-control" defaultValue={-1} onChange={ (e) => this.selectShop(e.target.value) }>
@@ -204,13 +241,30 @@ class CoinCaluclator extends Component {
                   )
                 }
               </select>
-              <span> Τζίρος: {this.state.profits.sum}  <br />Κέρδος: { this.state.profits.netgain }  <br />Κουπόνια: {this.state.profits.coupons}</span>
+              <select className="form-control" onChange={ (e) => this.selectCourier(e.target.value) }>
+                {
+                  this.props.couriers.map( (courier) =>
+                    <option value={courier.id} key={courier.id}>{courier.name}</option>
+                  )
+                }
+              </select>
+              <span> Τζίρος: {this.state.profits.sum} + {this.state.profits.extras}
+               <br />
+               <small>
+                ( {(1-Constants.gainMultiplier)*100}% -> {(this.state.profits.sum * (1 - Constants.gainMultiplier)).toFixed(2) || 0} 
+                | {Constants.gainMultiplier*100}% -> {(this.state.profits.sum * Constants.gainMultiplier).toFixed(2) || 0}) 
+               </small>
+              <br />Κέρδος: { this.state.profits.netgain }  
+              <br />Κουπόνια: {this.state.profits.coupons}
+              <br />Courier: {this.state.profits.courier}</span>
             </div>,
             <div className="coin-calculator" key="2">
-              <DatePicker hintText="Min Date" autoOk={true} value={this.state.dates.mindate} onChange={(n,p) => this.handle('mindate', p)}/>
-              <TimePicker hintText="Time" autoOk={true} value={this.state.dates.mintime} onChange={(n,p) => this.handle('mintime', p)}/>
-              <DatePicker hintText="Max Date" autoOk={true} value={this.state.dates.maxdate} onChange={(n,p) => this.handle('maxdate', p)}/>
-              <TimePicker hintText="Time" autoOk={true} value={this.state.dates.maxtime} onChange={(n,p) => this.handle('maxtime', p)}/>
+              Ημερομηνία και ώρα από: 
+              <DatePicker hintText="Min Date" autoOk={true} value={this.state.filters.mindate} onChange={(n,p) => this.handle('mindate', p)}/>
+              <TimePicker hintText="Time" autoOk={true} value={this.state.filters.mintime} onChange={(n,p) => this.handle('mintime', p)}/>
+              Ημερομηνία και ώρα μέχρι: 
+              <DatePicker hintText="Max Date" autoOk={true} value={this.state.filters.maxdate} onChange={(n,p) => this.handle('maxdate', p)}/>
+              <TimePicker hintText="Time" autoOk={true} value={this.state.filters.maxtime} onChange={(n,p) => this.handle('maxtime', p)}/>
               <button className="btn btn-sm" onClick={() => this.setTheDate(-1)}>Απο χθές</button>
               <button className="btn btn-sm" onClick={() => this.setTheDate(-7)}>Τελευταία εβδομάδα</button> 
               <button className="btn btn-sm" onClick={() => this.setTheDate(-30)}>30 ημέρες</button> 
@@ -219,32 +273,43 @@ class CoinCaluclator extends Component {
   }
 
 }
-let calculateSum = (orders) => {
+let calculateSum = (orders, courierID) => {
   let sum = 0;
-  for(let i=0; i < orders.length; i+=1){
-    sum += parseFloat(orders[i].Total);
-  }
-  let gain = sum * Constants.gainMultiplier;
-  for(let i=0; i < orders.length; i+=1){
-    gain += Constants.extraCharge * orders[i].Extra;
-  }
   let coupons = 0;
+  let gain = 0;
+  let courier = 0;
+  let extras = 0;
   for(let i=0; i < orders.length; i+=1){
-    const value = parseFloat(orders[i].Total) + Constants.extraCharge * orders[i].Extra;
+    if( parseInt(orders[i].Status, 10) !== 10 ) continue;
+    const tsum = parseFloat(orders[i].Total);
+    const tgain = Constants.extraCharge * orders[i].Extra;
+    const value = tsum + tgain;
     const disc = parseFloat(orders[i].HashtagFormula) || 0;
-    coupons += (disc < value) ? disc : value;
+    const coupon = (disc < value) ? disc : value;
+    
+    extras += tgain;
+    sum += tsum;
+    gain += tgain;
+    coupons += coupon;
+    if (parseInt(orders[i].DeliveryID,10) === parseInt(courierID,10)) {
+      courier += value - coupon;
+    }
   }
 
+  extras = extras.toFixed(2);
+  gain = (sum * Constants.gainMultiplier + gain).toFixed(2);
   sum  = sum.toFixed(2);
-  gain = gain.toFixed(2);
   coupons = coupons.toFixed(2);
   let netgain = gain - coupons;
   netgain = netgain.toFixed(2);
+  courier = courier.toFixed(2);
   return {
     coupons,
+    extras,
     gain,
     netgain,
-    sum
+    sum,
+    courier
   };
 }
 class Dashboard extends Component {
@@ -259,7 +324,9 @@ class Dashboard extends Component {
 
     this.state = {
       orders: [],
-      shops: []
+      filtered: [],
+      shops: [],
+      couriers: []
     }
 
     this.totalValue = {
@@ -267,6 +334,7 @@ class Dashboard extends Component {
       gain: 0
     }
     this.loadCatalogues();
+    this.loadCouriers();
     this.loadOrders();
   }
   
@@ -297,6 +365,15 @@ class Dashboard extends Component {
     });
   }
 
+  loadCouriers = () => {
+    Net.GetItWithToken('admin/couriers/').then( (data) => {
+      console.log(data);
+      this.setState({
+        couriers: data
+      })
+    });
+  }
+
   loadOrders = () => {
     Net.GetItWithToken('orders/').then( (data) => {
       this.orders = data;
@@ -311,12 +388,17 @@ class Dashboard extends Component {
     });
   }
 
-
+  onFilteredData = (data) => {
+    this.setState({
+      filtered: data
+    });
+  }
 
   render() {
     return (
       <div className="App">
-        <CoinCaluclator orders={this.state.orders} shops={this.state.shops} />
+        <CoinCaluclator orders={this.state.orders} shops={this.state.shops} couriers={this.state.couriers} 
+                        onFilteredData={this.onFilteredData}/>
         <table className="table table-hover">
           <thead>
             <tr>
@@ -334,7 +416,7 @@ class Dashboard extends Component {
             </tr>
           </thead>
           <tbody>
-          {this.state.orders.map((order, index) => 
+          {this.state.filtered.map((order, index) => 
               <OrderLogRow order={order} key={index}/>
           )}
           </tbody>

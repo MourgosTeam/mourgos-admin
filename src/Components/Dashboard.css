@@ -11,6 +11,7 @@
     align-items: center;
     padding: 10px 20px;
     justify-content: space-around;
+    flex-wrap: wrap;
 }
 .coin-calculator select {
 	width: 300px;
