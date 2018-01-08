@@ -1,6 +1,7 @@
 import Net from './helpers/net.js'
 import Template from './Components/Template.jsx'
 import Dashboard from './Components/Dashboard.jsx'
+import Alerts from './Components/Alerts.jsx'
 import Login from './Components/Login.jsx'
 import Users from './Components/Users.jsx'
 import Campaigns from './Components/Campaigns.jsx'
@@ -34,6 +35,18 @@ export default [
   name : 'home.dashboard',
   url  : '/dashboard',
   component: Dashboard,
+  resolve : [{
+    token : 'socket',
+    deps  : ['$transition$'],
+    resolveFn : (trans) => {
+      return Promise.resolve(Net.Socket);
+    }
+  }]
+},
+{
+  name : 'home.alerts',
+  url  : '/alerts',
+  component: Alerts,
   resolve : [{
     token : 'socket',
     deps  : ['$transition$'],

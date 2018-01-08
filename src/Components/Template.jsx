@@ -63,7 +63,7 @@ class Template extends Component {
             <span className="nav-link active" onClick={ () => this.goTo('home.dashboard')}>All Orders</span>
           </li>
           <li className="nav-item">
-            <span className="nav-link">Alerts</span>
+            <span className="nav-link" onClick={ () => this.goTo('home.alerts')}>Alerts</span>
           </li>
           <li className="nav-item">
             <span className="nav-link" onClick={ () => this.goTo('home.campaigns')}>Campaigns</span>
