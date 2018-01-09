@@ -32,7 +32,15 @@ class OrderLogRow extends Component {
       <td>{this.props.order.ShopName}<br /><small>{this.props.order.ShopPhone}</small></td>
       <td>{this.props.order.Address}<br /><small>{this.props.order.Name}, {this.props.order.Koudouni}, {this.props.order.Phone}</small></td>
       <td>
-        {Constants.statusText[this.props.order.Status]}<br />
+        <select className="form-control" defaultValue={this.props.order.Status} 
+                onChange={ (e) => this.props.onStatusChange(this.props.order.id, e.target.value)}
+                onClick={ (e) => e.stopPropagation() }>
+          {
+            Constants.statusText.map( (text, index) =>
+              <option value={index} key={index}>{text}</option>
+            )
+          }
+        </select>
         <small>
           {instate && 'for ' + parseInt(instate.getTime() / 1000 / 60, 10) + ' minutes'}
         </small>

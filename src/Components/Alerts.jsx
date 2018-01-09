@@ -103,12 +103,6 @@ class Alerts extends Component {
     });
   }
 
-  onFilteredData = (data) => {
-    this.setState({
-      filtered: data
-    });
-  }
-
   render() {
     return (
       <div className="App">
@@ -130,7 +124,7 @@ class Alerts extends Component {
           </thead>
           <tbody>
           {this.state.orders.map((order, index) => 
-              <OrderLogRow order={order} key={index}/>
+              <OrderLogRow order={order} key={index} onStatusChange={()=>null}/>
           )}
           </tbody>
         </table>
