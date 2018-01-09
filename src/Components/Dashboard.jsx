@@ -39,6 +39,7 @@ class CoinCaluclator extends Component {
       }
     };
     setTimeout(() => this.setTheDate(-1), 1000);
+    this.forceUpdate = false;
   }
 
   // Custom setFilters used in the same way as setState but under state.filters
@@ -55,12 +56,13 @@ class CoinCaluclator extends Component {
     console.log(this.state.filters);
   }
 
-  updateCarefully = () => { 
+  updateCarefully = (force) => { 
     let filters = this.state.filters;
     let hash = Hash(filters);
     // Catch loop
-    if(this.filtering === hash)return;
+    if(this.filtering === hash && this.props.nonce === this.nonce)return;
     this.filtering = hash;
+    this.nonce = this.props.nonce;
 
     const ndates = filters;
     const mindatetime = new Date(ndates.mindate.getFullYear(), ndates.mindate.getMonth(), ndates.mindate.getDate(), 
@@ -251,7 +253,8 @@ class Dashboard extends Component {
       orders: [],
       filtered: [],
       shops: [],
-      couriers: []
+      couriers: [],
+      nonce: 0
     }
 
     this.totalValue = {
@@ -308,7 +311,8 @@ class Dashboard extends Component {
     .then((logs) => this.mixLogs(this.orders, logs))
     .then((mixedData) => {
       this.setState({
-        orders: mixedData
+        orders: mixedData,
+        nonce: (this.state.nonce + 1)
       });
     });
   }
@@ -319,11 +323,16 @@ class Dashboard extends Component {
     });
   }
 
+  onStatusChange = (orderid, status) => {
+    Net.PostItWithToken('orders/'+orderid, {statusCode: status})
+    .then(() => this.loadOrders());
+  }
+
   render() {
     return (
       <div className="App">
         <CoinCaluclator orders={this.state.orders} shops={this.state.shops} couriers={this.state.couriers} 
-                        onFilteredData={this.onFilteredData}/>
+                        onFilteredData={this.onFilteredData} nonce={this.state.nonce}/>
         <table className="table table-hover">
           <thead>
             <tr>
@@ -342,7 +351,7 @@ class Dashboard extends Component {
           </thead>
           <tbody>
           {this.state.filtered.map((order, index) => 
-              <OrderLogRow order={order} key={index}/>
+              <OrderLogRow order={order} key={index}  onStatusChange={this.onStatusChange}/>
           )}
           </tbody>
         </table>
