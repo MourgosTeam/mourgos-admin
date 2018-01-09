@@ -325,8 +325,8 @@ class Dashboard extends Component {
   }
 
   onStatusChange = (orderid, status) => {
-    Net.PostItWithToken('orders/'+orderid, {statusCode: status}).
-    then(() => this.loadOrders());
+    Net.PostItWithToken('orders/'+orderid, {statusCode: status})
+    .then(() => this.loadOrders());
   }
 
   render() {
