@@ -49,13 +49,17 @@ class OrderLogRow extends Component {
         {this.props.order.Hashtag ? 
           <span>
             Κουπόνι : {this.props.order.Hashtag} <br />
-            <small>Έκπτωση : - {parseFloat(this.props.order.HashtagFormula).toFixed(2)}</small>
+            <small>Έκπτωση : - { parseInt(this.props.order.HashtagFormula, 10) === 100 ?
+             ((parseFloat(this.props.order.HashtagFormula) - 100) * (parseFloat(this.props.order.Total) + this.props.order.Extra * Constants.extraCharge)).toFixed(2) :
+               parseFloat(this.props.order.HashtagFormula).toFixed(2)}
+            </small>
           </span>
         : ''}
       </td>
       <td>
-        {this.props.order.Total} { this.props.order.Extra ? '+ 0.50' : '' } <br />
-        <small>Κέρδος: { (this.props.order.Total * Constants.gainMultiplier + this.props.order.Extra * 0.5).toFixed(2) }</small>
+        {this.props.order.FinalPrice.toFixed(2)} <br />
+        <small>{this.props.order.Total} { this.props.order.Extra ? '+ 0.50' : '' }</small> <br />
+        <small>Κέρδος: { (this.props.order.Total * Constants.gainMultiplier + this.props.order.Extra * Constants.extraCharge).toFixed(2) }</small>
       </td>
       <td>
         <span>{dtime.format("HH:mm")}</span><br />
