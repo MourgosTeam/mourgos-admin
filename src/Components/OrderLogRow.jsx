@@ -32,7 +32,7 @@ class OrderLogRow extends Component {
       <td>{this.props.order.ShopName}<br /><small>{this.props.order.ShopPhone}</small></td>
       <td>{this.props.order.Address}<br /><small>{this.props.order.Name}, {this.props.order.Koudouni}, {this.props.order.Phone}</small></td>
       <td>
-        <select className="form-control" defaultValue={this.props.order.Status} 
+        <select className="form-control" value={this.props.order.Status} 
                 onChange={ (e) => this.props.onStatusChange(this.props.order.id, e.target.value)}
                 onClick={ (e) => e.stopPropagation() }>
           {
