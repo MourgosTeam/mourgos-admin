@@ -53,7 +53,6 @@ class CoinCaluclator extends Component {
 
   componentDidUpdate() {
     this.updateCarefully();
-    console.log(this.state.filters);
   }
 
   updateCarefully = (force) => { 
@@ -206,12 +205,12 @@ let calculateSum = (orders, courierID) => {
   let gain = 0;
   let courier = 0;
   let extras = 0;
-  for(let i=0; i < orders.length; i+=1){
-    if( parseInt(orders[i].Status, 10) !== 10 ) continue;
+  for (let i=0; i < orders.length; i+=1) {
+    if (parseInt(orders[i].Status, 10) !== 10) continue;
     const tsum = parseFloat(orders[i].Total);
     const tgain = Constants.extraCharge * orders[i].Extra;
     const value = tsum + tgain;
-    const disc = parseFloat(orders[i].HashtagFormula) || 0;
+    const disc = (parseInt(orders[i].HashtagFormula, 10) === 100) ? (parseFloat(orders[i].HashtagFormula) - 100) * value : parseFloat(orders[i].HashtagFormula) || 0;
     const coupon = (disc < value) ? disc : value;
     
     extras += tgain;
@@ -286,7 +285,6 @@ class Dashboard extends Component {
 
   loadCatalogues = () => {
     Net.GetItWithToken('catalogues/').then( (data) => {
-      console.log(data);
       this.setState({
         shops: data
       })
@@ -295,7 +293,6 @@ class Dashboard extends Component {
 
   loadCouriers = () => {
     Net.GetItWithToken('admin/couriers/').then( (data) => {
-      console.log(data);
       this.setState({
         couriers: data
       })

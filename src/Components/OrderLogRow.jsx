@@ -32,7 +32,7 @@ class OrderLogRow extends Component {
       <td>{this.props.order.ShopName}<br /><small>{this.props.order.ShopPhone}</small></td>
       <td>{this.props.order.Address}<br /><small>{this.props.order.Name}, {this.props.order.Koudouni}, {this.props.order.Phone}</small></td>
       <td>
-        <select className="form-control" defaultValue={this.props.order.Status} 
+        <select className="form-control" value={this.props.order.Status} 
                 onChange={ (e) => this.props.onStatusChange(this.props.order.id, e.target.value)}
                 onClick={ (e) => e.stopPropagation() }>
           {
@@ -49,13 +49,17 @@ class OrderLogRow extends Component {
         {this.props.order.Hashtag ? 
           <span>
             Κουπόνι : {this.props.order.Hashtag} <br />
-            <small>Έκπτωση : - {parseFloat(this.props.order.HashtagFormula).toFixed(2)}</small>
+            <small>Έκπτωση : - { parseInt(this.props.order.HashtagFormula, 10) === 100 ?
+             ((parseFloat(this.props.order.HashtagFormula) - 100) * (parseFloat(this.props.order.Total) + this.props.order.Extra * Constants.extraCharge)).toFixed(2) :
+               parseFloat(this.props.order.HashtagFormula).toFixed(2)}
+            </small>
           </span>
         : ''}
       </td>
       <td>
-        {this.props.order.Total} { this.props.order.Extra ? '+ 0.50' : '' } <br />
-        <small>Κέρδος: { (this.props.order.Total * Constants.gainMultiplier + this.props.order.Extra * 0.5).toFixed(2) }</small>
+        {this.props.order.FinalPrice.toFixed(2)} <br />
+        <small>{this.props.order.Total} { this.props.order.Extra ? '+ 0.50' : '' }</small> <br />
+        <small>Κέρδος: { (this.props.order.Total * Constants.gainMultiplier + this.props.order.Extra * Constants.extraCharge).toFixed(2) }</small>
       </td>
       <td>
         <span>{dtime.format("HH:mm")}</span><br />
