@@ -4,6 +4,7 @@ import Dashboard from './Components/Dashboard.jsx'
 import Alerts from './Components/Alerts.jsx'
 import Login from './Components/Login.jsx'
 import Users from './Components/Users.jsx'
+import ImportView from './Components/ImportView.jsx'
 import Campaigns from './Components/Campaigns.jsx'
 import MapView from './Components/MapView.jsx'
 
@@ -54,6 +55,11 @@ export default [
       return Promise.resolve(Net.Socket);
     }
   }]
+},
+{
+  name : 'home.import',
+  url  : '/import',
+  component: ImportView
 },
 {
   name : 'home.users',

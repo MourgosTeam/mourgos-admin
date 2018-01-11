@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<!-- saved from url=(0031)http://oss.sheetjs.com/js-xlsx/ -->
+<html><script type="text/javascript" async="" src="./excelToData_files/ga.js.download"></script>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Import Data</title>
+<style>
+#drop{
+	border:2px dashed #bbb;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	padding:25px;
+	text-align:center;
+	font:20pt bold,"Vollkorn";color:#bbb
+}
+#b64data{
+	width:100%;
+}
+a { text-decoration: none }
+</style>
+</head>
+<body>
+<input type="file" name="xlfile" id="xlf"> ... or click here to select a file
+<div style="width:500px;border:2px solid red">
+	My scripts : <br>
+	SELECT SHEET : <input type="text" placeholder="Sheet1 ...." id="sheet"/><br>
+	SELECT Table : <input type="text" placeholder="Table ...." id="table" value="products" /><br>
+	Get SQL for insert : <button onclick="getSQL()">Insert</button><br>
+	Get SQL for update : <button onclick="upSQL()">Update</button><br>
+	Get SQL for attributes insert : <button onclick="normalizeAttr()">Insert</button><br>
+	<!-- Get SQL for attributes update : <button onclick="normalizeAttr()">Update</button><br> -->
+  <select id="catid">
+    <option value="1" selected>Eris</option>
+  </select>
+  <button onclick="getTransaction()">Beat it!</button><br>
+	OUTPUT : <textarea id="resultout"></textarea>
+</div>
+
+
+<pre id="out"></pre>
+<div id="htmlout"></div>
+<br>
+
+<script type="text/javascript">
+
+function castProducts(products) {
+
+}
+
+function castCategories(categories) {
+}
+
+function castAttributes(attributes) {
+}
+
+function getTransaction() {
+  const json = jsonData;
+  const products = json["Products"];
+  const categories = json["Categories"];
+  const attributes = json["Attributes"];
+
+  const catalogue = document.getElementById('catid');
+
+  const pobj = castProducts(products);
+  const cobj = castCategories(cobj);
+  const aobj = castAttributes(attributes);
+}
+</script>
+
+<script src="./excelToData_files/shim.js.download"></script>
+<script src="./excelToData_files/xlsx.full.min.js.download"></script>
+<script>
+/* jshint browser:true */
+/* eslint-env browser */
+/* eslint no-use-before-define:0 */
+/* global Uint8Array, Uint16Array, ArrayBuffer */
+/* global XLSX */
+var X = XLSX;
+var XW = {
+	
+  /* worker message */
+	msg: 'xlsx',
+	
+  /* worker scripts */
+	worker: './xlsxworker.js'
+};
+
+var global_wb;
+var jsonData = {};
+var process_wb = (function() {
+	var OUT = document.getElementById('out');
+	var HTMLOUT = document.getElementById('htmlout');
+
+	var get_format = (function() {
+  var radios = document.getElementsByName( "format" );
+  return function() {
+    	for(var i = 0; i < radios.length; ++i) if(radios[i].checked || radios.length === 1) return radios[i].value;
+    };
+  })();
+
+	var to_json = function to_json(workbook) {
+    var result = {};
+    workbook.SheetNames.forEach(function(sheetName) {
+    	var roa = X.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    	if (roa.length) {
+        result[sheetName] = roa;
+      }
+    });
+    jsonData = result;
+
+    return JSON.stringify(result, 2, 2);
+	};
+
+	return function process_wb(wb) {
+  global_wb = wb;
+  var output = "";
+  output = to_json(wb);
+  if(OUT.innerText === undefined) OUT.textContent = output;
+  else OUT.innerText = output;
+  if(typeof console !== 'undefined') console.log("output", new Date());
+	};
+})();
+
+var do_file = (function() {
+	return function do_file(files) {
+  var f = files[0];
+  var reader = new FileReader();
+  reader.onload = function(e) {
+      if (typeof console !== 'undefined') {
+        console.log("onload", new Date(), rABS, use_worker);
+      }
+      var data = e.target.result;
+      data = new Uint8Array(data);
+      process_wb(X.read(data, { type: 'array' }));
+    };
+    reader.readAsArrayBuffer(f);
+  };
+})();
+
+// HANDLE Input change file
+(function() {
+	var xlf = document.getElementById('xlf');
+	if(!xlf.addEventListener) return;
+	function handleFile(e) { do_file(e.target.files); }
+	xlf.addEventListener('change', handleFile, false);
+})();
+</script>
+
+
+
+
+<!-- MY SCRIPTS -->
+<script type="text/javascript">
+
+function copy(r){
+	var arr = [];
+	for(var i=0;i<r.length;i++){
+  arr.push(Object.assign({},r[i]));
+	}
+	return arr;
+}
+function normalizeAttr(){
+	var sheet = document.getElementById('sheet').value;
+  var data = copy(jsonData[sheet]);
+  console.log(data);
+  if(!data)alert("Sheet not found!");
+  var table = document.getElementById('table').value;
+
+  var s = "";
+  var keys = [];
+  for(var i=0;i<data.length;i++){
+    var obj = data[i];
+
+    var fields = [];
+    var values = [];
+    var subs = [];
+    var subss = [];
+    var products = [];
+    for(var j in obj){
+      obj[j] = (""+obj[j]).split("\"").join('\\\"');
+      obj[j] = (""+obj[j]).split("'").join('\\\"');
+      if(j=='Price'){
+        obj[j] = (""+obj[j]).replace("€",'');
+        obj[j] = (""+obj[j]).replace(",",'.');
+        obj[j] = parseFloat(obj[j]);
+      }
+      if(j=='Products'){
+      	products = JSON.parse(obj[j]);
+      	continue;
+      }
+      if(j=='Options'){
+      	//obj[j] = (""+obj[j]).split(" ").join('');
+      	obj[j] = (""+obj[j]).split(",").join('\\\",\\\"');
+      	obj[j] = "[\\\""+obj[j]+"\\\"]";
+      }
+      if(keys.includes(j)){
+        subss.push(j + "='" + obj[j] + "'");
+        continue;
+      }
+      fields.push(j);
+      values.push(obj[j]);
+      subs.push(j + "='" + obj[j] + "' ");
+    }
+    var f = fields.join(",");
+    var v = values.join("','");
+    subs = subs.join(", ");
+    subss = subss.join(" AND ");
+    for(var j=0; j < products.length ;j ++){
+    	s+= `INSERT INTO ${table} (${f}, product_id) VALUES('${v}', '${products[j]}');\n`;
+    }
+  }
+
+  document.getElementById('resultout').value = s;
+}
+function upSQL(){
+  var sheet = document.getElementById('sheet').value;
+   var data = copy(jsonData[sheet]);
+ if(!data)alert("Sheet not found!");
+  var table = document.getElementById('table').value;
+
+  var s = "";
+  var keys = ['category_id', 'Name','Description'];
+  for(var i=0;i<data.length;i++){
+    var obj = data[i];
+
+    var fields = [];
+    var values = [];
+    var subs = [];
+    var subss = [];
+    for(var j in obj){
+      obj[j] = (""+obj[j]).split("'").join('\\\'');
+      if(j=='Price'){
+        obj[j] = (""+obj[j]).replace("€",'');
+        obj[j] = (""+obj[j]).replace(",",'.');
+        obj[j] = parseFloat(obj[j]);
+      }
+      if(j=='Image'){
+        obj[j] = "/images/products/"+obj[j];
+      }
+      if(keys.includes(j)){
+        subss.push(j + "='" + obj[j] + "'");
+        continue;
+      }
+      fields.push(j);
+      values.push(obj[j]);
+      subs.push(j + "='" + obj[j] + "' ");
+    }
+    var f = fields.join(",");
+    var v = values.join("','");
+    subs = subs.join(", ");
+    subss = subss.join(" AND ");
+    s+= `UPDATE ${table} SET ${subs} WHERE ${subss};\n`;
+  }
+
+  document.getElementById('resultout').value = s;
+}
+
+function getSQL(){
+  var sheet = document.getElementById('sheet').value;
+  var data = copy(jsonData[sheet]);
+  if(!data)alert("Sheet not found!");
+  var table = document.getElementById('table').value;
+
+  var s = "";
+
+  for(var i=0;i<data.length;i++){
+    var obj = data[i];
+
+    var fields = [];
+    var values = [];
+    for(var j in obj){
+      obj[j] = (""+obj[j]).split("'").join('\\\'');
+      if(j=='Price'){
+        obj[j] = (""+obj[j]).replace("€",'');
+        obj[j] = (""+obj[j]).replace(",",'.');
+        obj[j] = parseFloat(obj[j]);
+      }
+      if(j=='Image'){
+        obj[j] = "/images/products/"+obj[j];
+      }
+      fields.push(j);
+      values.push(obj[j]);
+    }
+    var f = fields.join(",");
+    var v = values.join("','")
+    s+= `INSERT INTO ${table} (${f}) VALUES('${v}');\n`;
+  }
+
+  document.getElementById('resultout').value = s;
+}
+</script>
+
+</body></html>
