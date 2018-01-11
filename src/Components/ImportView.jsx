@@ -6,7 +6,7 @@ import XLSX from 'xlsx'
 
 
 function getID (i,c) {
-  return parseInt(c) * 10000 + parseInt(i);
+  return parseInt(c, 10) * 10000 + parseInt(i, 10);
 }
 
 function castProducts(products, catalogueID) {
@@ -141,7 +141,7 @@ class ImportView extends Component {
     const categories = json["Categories"];
     const attributes = json["Attributes"];
 
-    const catalogue = parseInt(this.state.shop);
+    const catalogue = parseInt(this.state.shop, 10);
     const pobj = castProducts(products, catalogue);
     const cobj = castCategories(categories, catalogue);
     const aobj = castAttributes(attributes, catalogue);
