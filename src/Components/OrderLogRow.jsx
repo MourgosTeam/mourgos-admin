@@ -4,14 +4,54 @@ import './Dashboard.css';
 
 import Constants from '../helpers/Constants';
 
+class LogRows extends Component {
+
+  render() {
+    const active = this.props.active === 1 ? 'showLog' : 'hideLog';
+    let result = 
+      this.props.logs.map((log,pos) => {
+      const temp = 'logFor'+log.EntityID;
+      const tt = new Date(log.created_on);
+      let prevLog = pos === 0 ? new Date() : new Date(this.props.logs[pos-1].created_on);
+      let instate = false;
+      if (prevLog) {
+        instate = new Date(prevLog - tt);
+        if( instate.getTime() / 1000 < 60 || instate.getTime() / 1000 > 12000 ) {
+          instate = false;
+        }
+      }
+      return <tr key={pos+1} className={`log table-active ${temp} ${active}`}>
+        <td></td>
+        <td>{log.name}<br /><small>{log.phone}</small></td>
+        <td></td>
+        <td>
+        {log.Value}<br />
+        <small>{instate && 'for ' + parseInt(instate.getTime() / 1000 / 60, 10) + ' minutes'}</small>
+        </td>
+        <td></td>
+        <td></td>
+        <td><small>{tt.getDate()}/{tt.getMonth()+1}</small> - {tt.format('HH:mm')}</td>
+      </tr>
+    });
+    return result;
+  }
+}
 
 class OrderLogRow extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      openLogs: 0
+    };
+  }
+
   toggle = (id) => {
-    const text = ".logFor" + id;
-    var elems = document.querySelectorAll(text);
-    for(var i=0;i < elems.length; i+=1){
-      elems[i].style.display = ( elems[i].style.display === 'table-row' ) ? 'none' : 'table-row';
-    }
+    let nlogs = this.state.openLogs === 1 ? 0 : 1;
+    this.setState({
+      openLogs: nlogs
+    });
   }
 
   render() {
@@ -66,30 +106,8 @@ class OrderLogRow extends Component {
         <span className="need_to_be_rendered" dateTime={this.props.order.PostDate}></span>
       </td>
     </tr>,
-    this.props.order.logs.map((log,pos) => {
-      const temp = 'logFor'+log.EntityID;
-      const tt = new Date(log.created_on);
-      let prevLog = pos === 0 ? new Date() : new Date(this.props.order.logs[pos-1].created_on);
-      let instate = false;
-      if (prevLog) {
-        instate = new Date(prevLog - tt);
-        if( instate.getTime() / 1000 < 60 || instate.getTime() / 1000 > 12000 ) {
-          instate = false;
-        }
-      }
-      return <tr key={pos+1} className={`log table-active ${temp}`}>
-        <td></td>
-        <td>{log.name}<br /><small>{log.phone}</small></td>
-        <td></td>
-        <td>
-        {log.Value}<br />
-        <small>{instate && 'for ' + parseInt(instate.getTime() / 1000 / 60, 10) + ' minutes'}</small>
-        </td>
-        <td></td>
-        <td></td>
-        <td><small>{tt.getDate()}/{tt.getMonth()+1}</small> - {tt.format('HH:mm')}</td>
-      </tr>
-    })]
+    <LogRows key={1312} logs={this.props.order.logs} active={this.state.openLogs}/>
+    ]
   }  
 }
 
