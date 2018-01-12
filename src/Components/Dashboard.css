@@ -21,3 +21,7 @@
 	max-width: 400px;
     margin: 12px;
 }
+
+.showLog {
+    display: table-row;
+}
