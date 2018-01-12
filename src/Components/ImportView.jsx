@@ -92,10 +92,18 @@ class ImportView extends Component {
     this.state = {
       jsonData: {},
       jsonString: '',
-      shop: -1
+      shop: -1,
+      shops: []
     }
+    this.loadShops();
   }
 
+  loadShops = () => {
+    Net.GetItWithToken('catalogues/')
+    .then((data) => this.setState({
+      shops: data
+    }));
+  }
   to_json = (workbook) => {
     let result = {};
     workbook.SheetNames.forEach(function(sheetName) {
@@ -139,7 +147,7 @@ class ImportView extends Component {
     const json = this.state.jsonData;
     const products = json["Products"];
     const categories = json["Categories"];
-    const attributes = json["Attributes"];
+    const attributes = json["Attributes"] || [];
 
     const catalogue = parseInt(this.state.shop, 10);
     const pobj = castProducts(products, catalogue);
@@ -175,7 +183,7 @@ class ImportView extends Component {
       <div>
         <select id="catid" defaultValue={this.state.shop} onChange={(e) => this.changeShop(e.target.value)}>
           <option value="-1">----</option>
-          <option value="1">Eris</option>
+          {this.state.shops.map((shop, index) => <option value={shop.id}>{shop.Name}</option>)}
         </select>
         <input type="file" onChange={(e) => this.changeFile(e.target.files)} placeholder="Drop file here..."/>
         <button className="btn btn-primary" onClick={() => this.do_file()}>Process File</button>

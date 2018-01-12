@@ -19,7 +19,7 @@ import Tooltip from 'rc-tooltip';
 const Handle = Slider.Handle;
 
 
-class CoinCaluclator extends Component {
+class CoinCalculator extends Component {
   constructor(props) {
     super(props);
 
@@ -329,7 +329,7 @@ class Dashboard extends Component {
   render() {
     return (
       <div className="App">
-        <CoinCaluclator orders={this.state.orders} shops={this.state.shops} couriers={this.state.couriers} 
+        <CoinCalculator orders={this.state.orders} shops={this.state.shops} couriers={this.state.couriers} 
                         onFilteredData={this.onFilteredData} nonce={this.state.nonce}/>
         <table className="table table-hover">
           <thead>
