@@ -99,7 +99,7 @@ class ImportView extends Component {
   }
 
   loadShops = () => {
-    Net.GetItWithToken('catalogues/')
+    Net.GetItWithToken('catalogues/?dev=devmode')
     .then((data) => this.setState({
       shops: data
     }));
