@@ -173,7 +173,11 @@ class ImportView extends Component {
     console.log(query);
     Net.PostItWithToken('admin/import', query).then( (data) => {
       console.log(data);
-      alert(data);
+      var s= "";
+      for( var i in data ){
+        s += i + " : " data[i] + "<br/>";
+      }
+      alert(s);
     }).catch((e) => null);   
 
   }
