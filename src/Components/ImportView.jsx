@@ -175,7 +175,7 @@ class ImportView extends Component {
       console.log(data);
       var s= "";
       for( var i in data ){
-        s += i + " : " data[i] + "<br/>";
+        s += i + " : " + data[i] + "<br/>";
       }
       alert(s);
     }).catch((e) => null);   

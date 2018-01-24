@@ -150,7 +150,8 @@ class CoinCalculator extends Component {
   
   toggleFireEvents = () => {
     this.setFilters({
-      fireEvents: !this.state.filters.fireEvents
+      fireEvents: !this.state.filters.fireEvents,
+      slider: this.state.orders.length
     });
   }
 
