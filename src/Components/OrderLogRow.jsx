@@ -47,6 +47,13 @@ class OrderLogRow extends Component {
     };
   }
 
+  componentDidMount() {
+    this.link.addEventListener('click', (e) => {
+      e.stopPropagation();
+      return false;
+    });
+  }
+
   toggle = (id) => {
     let nlogs = this.state.openLogs === 1 ? 0 : 1;
     this.setState({
@@ -70,7 +77,7 @@ class OrderLogRow extends Component {
     }
     return [
     <tr key={0} className={clickable + ' ' + Constants.lineColor[this.props.order.Status]} onClick={() => this.toggle(this.props.order.id)}>
-      <th scope="row"><a href={BASEURL + this.props.order.id} target="_new">{this.props.order.id}</a></th>
+      <th scope="row"><a href={BASEURL + this.props.order.id} ref={(input) => { this.link = input; }} target="_new">{this.props.order.id}</a></th>
       <td>{this.props.order.ShopName}<br /><small>{this.props.order.ShopPhone}</small></td>
       <td>{this.props.order.Address}<br /><small>{this.props.order.Name}, {this.props.order.Koudouni}, {this.props.order.Phone}</small></td>
       <td>
