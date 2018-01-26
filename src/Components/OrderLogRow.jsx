@@ -55,6 +55,8 @@ class OrderLogRow extends Component {
   }
 
   render() {
+    const BASEURL = "http://"+window.location.hostname + '/readytoeat/';
+
     const dtime = new Date(this.props.order.PostDate);
     const clickable = this.props.order.logs.length > 0 ? 'pointer' : '';
     let instate = false,fresh,last;
@@ -68,7 +70,7 @@ class OrderLogRow extends Component {
     }
     return [
     <tr key={0} className={clickable + ' ' + Constants.lineColor[this.props.order.Status]} onClick={() => this.toggle(this.props.order.id)}>
-      <th scope="row">{this.props.order.id}</th>
+      <th scope="row"><a href={BASEURL + this.props.order.id} target="_new">{this.props.order.id}</a></th>
       <td>{this.props.order.ShopName}<br /><small>{this.props.order.ShopPhone}</small></td>
       <td>{this.props.order.Address}<br /><small>{this.props.order.Name}, {this.props.order.Koudouni}, {this.props.order.Phone}</small></td>
       <td>
