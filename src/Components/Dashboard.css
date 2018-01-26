@@ -25,3 +25,7 @@
 .showLog {
     display: table-row;
 }
+
+th a {
+    color:black;
+}
