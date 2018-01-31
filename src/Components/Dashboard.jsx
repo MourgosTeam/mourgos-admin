@@ -156,6 +156,9 @@ class CoinCalculator extends Component {
   }
 
   render() {
+    const shopMultiplier = (1 - Constants.gainMultiplier);
+
+
     return  [<div className="coin-calculator" key="1">
               <button className="update-btn btn btn-secondary" onClick={() => this.toggleFireEvents()}>{this.state.filters.fireEvents ? 'Free List' : 'Update List'}</button>
               <Slider min={0} max={this.state.orders.length}
@@ -178,7 +181,7 @@ class CoinCalculator extends Component {
               <span> Τζίρος: {this.state.profits.sum} + {this.state.profits.extras}
                <br />
                <small>
-                ( {(1-Constants.gainMultiplier)*100}% -> {(this.state.profits.sum * (1 - Constants.gainMultiplier)).toFixed(2) || 0} 
+                ( {shopMultiplier*100}% -> {(this.state.profits.sum * shopMultiplier).toFixed(2) || 0} 
                 | {Constants.gainMultiplier*100}% -> {(this.state.profits.sum * Constants.gainMultiplier).toFixed(2) || 0}) 
                </small>
               <br />Κέρδος: { this.state.profits.netgain }  
@@ -208,6 +211,7 @@ let calculateSum = (orders, courierID) => {
   let extras = 0;
   for (let i=0; i < orders.length; i+=1) {
     if (parseInt(orders[i].Status, 10) !== 10) continue;
+    if (orders[i].ShopName === "Ψιλικά")continue;
     const tsum = parseFloat(orders[i].Total);
     const tgain = Constants.extraCharge * orders[i].Extra;
     const value = tsum + tgain;
