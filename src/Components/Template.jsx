@@ -11,13 +11,19 @@ class Template extends Component {
     super(props);
 
     this.state = {
-      isSiteOpen: false
+      isSiteOpen: false,
+      isSiteProblem: false
     };
 
 
     Net.GetItWithToken('globals/MourgosIsLive').then((data) => {
       this.setState({
         isSiteOpen: data.Value === "1"
+      })
+    });
+    Net.GetItWithToken('globals/MourgosHasProblem').then((data) => {
+      this.setState({
+        isSiteProblem: data.Value === "1"
       })
     });
   }
@@ -51,6 +57,26 @@ class Template extends Component {
       document.getElementById('siteStatus').disabled = false;
       this.setState({
         isSiteOpen: open 
+      });
+    });
+  }
+  toggleSiteProblem = (e) => {
+    const target = e.target;
+    const value = target.checked;
+
+    let v = 0;
+    if(value === true){
+      v = 1;
+    }
+    else{
+      v = 0;
+    }
+    document.getElementById('siteProblem').disabled = true;
+    Net.PostItWithToken('admin/site/problem', {value: v}).then((data) => v === 1)
+    .then((open) => {
+      document.getElementById('siteProblem').disabled = false;
+      this.setState({
+        isSiteProblem: open
       });
     });
   }
@@ -90,6 +116,18 @@ class Template extends Component {
                      value={this.state.isSiteOpen ? 'on' : 'off'} />
               <span className="custom-control-indicator"></span>
               <span className="custom-control-description">Ο μουργος ειναι {this.state.isSiteOpen ? 'ανοιχτός':'κλειστός'}!</span>
+            </label>
+          </li>
+          <li style={{padding: 8}} className="nav-item">
+            <label className="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0">
+              <input type="checkbox" 
+                     className="custom-control-input"
+                     onChange={this.toggleSiteProblem}
+                     id="siteProblem"
+                     checked={this.state.isSiteProblem}
+                     value={this.state.isSiteProblem ? 'on' : 'off'} />
+              <span className="custom-control-indicator"></span>
+              <span className="custom-control-description">Ο μουργος {this.state.isSiteProblem ? '':'δεν'} εχει πρόβλημα!</span>
             </label>
           </li>
         </ul>
