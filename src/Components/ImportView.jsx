@@ -125,6 +125,7 @@ class ImportView extends Component {
 
   do_file = () => {
     var f = this.file;
+    if(!f) return;
     var reader = new FileReader();
     reader.onload = (e) => {
       var data = e.target.result;
@@ -173,28 +174,36 @@ class ImportView extends Component {
     console.log(query);
     Net.PostItWithToken('admin/import', query).then( (data) => {
       console.log(data);
-      var s= "";
-      for( var i in data ){
-        s += i + " : " + data[i] + "<br/>";
-      }
-      alert(s);
+      alert("Successfully imported data!");
+      window.location.href = window.location.href.split("#").join('');
     }).catch((e) => null);   
 
   }
 
   render() {
     return (
-      <div>
-        <select id="catid" defaultValue={this.state.shop} onChange={(e) => this.changeShop(e.target.value)}>
-          <option value="-1">----</option>
-          {this.state.shops.map((shop, index) => <option value={shop.id}>{shop.Name}</option>)}
-        </select>
-        <input type="file" onChange={(e) => this.changeFile(e.target.files)} placeholder="Drop file here..."/>
-        <button className="btn btn-primary" onClick={() => this.do_file()}>Process File</button>
-        {this.state.jsonString.length > 5 ? 
-          <button className="btn btn-primary" onClick={() => this.getTransaction()}>Get Transaction</button>
-          :''
-        }
+      <div className="container">
+        <div className="card">
+          <div className="card-block">
+            <h4 className="card-title">Import Products</h4>
+            <h6 className="card-subtitle mb-2 text-muted">Select shop -> Choose File -> Process -> Get Transaction</h6>
+            <div className="card-block">
+              <select id="catid" defaultValue={this.state.shop} onChange={(e) => this.changeShop(e.target.value)}>
+                <option value="-1">----</option>
+                {this.state.shops.map((shop, index) => <option value={shop.id}>{shop.Name}</option>)}
+              </select>
+              <input type="file" onChange={(e) => this.changeFile(e.target.files)} placeholder="Drop file here..."/>            
+            </div>
+            <br />
+            <div className="card-block">
+              <button className="card-link btn btn-primary"  onClick={() => this.do_file()}>Process File</button>
+              {this.state.jsonString.length > 5 ? 
+                <button className="card-link btn btn-secondary" onClick={() => this.getTransaction()}>Get Transaction</button>
+              :''}
+            </div>
+          </div>
+        </div>
+        <div>
         {
           this.state.query ? 
           <div>
@@ -203,11 +212,12 @@ class ImportView extends Component {
             <span>Categories: {this.state.query.Categories.length}</span><br />
             <span>Products: {this.state.query.Products.length}</span><br />
             <span>Connectors: {this.state.query.Connectors.length}</span><br />
-            <button onClick={() => this.submitImport()}>Import Data!!!</button>
+            <button className="btn btn-success" onClick={() => this.submitImport()}>Import Data!!!</button>
           </div>
 
           :''
         }
+        </div>
       </div>
     );
   }

@@ -117,7 +117,7 @@ class OrderLogRow extends Component {
       </td>
       <td>
         <span>{dtime.format("HH:mm")}</span><br />
-        <span className="need_to_be_rendered" dateTime={this.props.order.PostDate}></span>
+        <span>{dtime.format("dd/MM")}</span>
       </td>
     </tr>,
     <LogRows key={1312} logs={this.props.order.logs} active={this.state.openLogs}/>
