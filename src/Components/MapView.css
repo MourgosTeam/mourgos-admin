@@ -1,38 +1,36 @@
 .mymarker{
-	border:1px solid red;
-	border-radius: 25px;
-	width: 50px;
-	height: 50px;
-	background-color: rgba(233,11,11,0.7);
+	border-radius: 15px;
+	width: 40px;
+	height: 40px;
 	font-size: 42px;
 }
 .mymarker-0{
 	opacity: 0.9;
 }
 .mymarker-1{
-	opacity: 0.7;
-}
-.mymarker-2{
-	opacity: 0.6;
-}
-.mymarker-3{
 	opacity: 0.5;
 }
-.mymarker-4{
-	opacity: 0.45;
-}
-.mymarker-5{
-	opacity: 0.4;
-}
-.mymarker-6{
-	opacity: 0.37;
-}
-.mymarker-7{
-	opacity: 0.34;
-}
-.mymarker-8{
+.mymarker-2{
 	opacity: 0.3;
 }
-.mymarker-9{
+.mymarker-3{
+	opacity: 0.28;
+}
+.mymarker-4{
 	opacity: 0.25;
+}
+.mymarker-5{
+	opacity: 0.22;
+}
+.mymarker-6{
+	opacity: 0.19;
+}
+.mymarker-7{
+	opacity: 0.17;
+}
+.mymarker-8{
+	opacity: 0.16;
+}
+.mymarker-9{
+	opacity: 0.15;
 }

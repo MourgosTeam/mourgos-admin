@@ -28,8 +28,10 @@ const handle = (props) => {
 }
 class MyMarker extends Component {
   render() {
-    const pos = 'mymarker-' + (this.props.data.position || 0);
-    return <div className={`mymarker ${pos} ${this.props.data.color}`}>{this.props.data.letter}</div>;
+    const pos = 'mymarker-' + (this.props.position || 0);
+    return  <div className={`mymarker ${pos} ${this.props.data.color}`}>
+              <i class="fa fa-motorcycle"></i>
+            </div>;
   }
 }
 class MapView extends Component {
@@ -87,18 +89,30 @@ class MapView extends Component {
     });
   }
 
+  distanceOf(a,b) {
+    if(!a || !b || !a.coords || !b.coords)return 0;
+    const dx  = a.coords.latitude - b.coords.latitude;
+    const dy  = a.coords.longitude- b.coords.longitude;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+
   createMarkers = (data) => {
     let marks = {};
     let groups = [];
     for (let i=0;i<data.length;i++) {
       let obj = JSON.parse(data[i].Value);
-      groups[data[i].user_id] = (groups[data[i].user_id] + 1 )|| 0;
+      groups[data[i].user_id] = (groups[data[i].user_id] + 1 )|| 1;
       obj.position = groups[data[i].user_id];
       obj.color = 'red';
       obj.letter =  this.state.users[data[i].user_id].username[0];
-      if (!marks[data[i].user_id]) marks[data[i].user_id] = [];
-      marks[data[i].user_id].push(obj);
+      if (!marks[data[i].user_id]) {
+        marks[data[i].user_id] = [obj];
+      } else {
+        if(this.distanceOf(marks[data[i].user_id][marks[data[i].user_id].length-1], obj) < 0.00075)continue;
+        marks[data[i].user_id].push(obj);  
+      }
     }
+
     let sliders = [];
     let nopts = {};
     for (var user in marks) {
@@ -159,6 +173,7 @@ class MapView extends Component {
                     lat={marker.lat}
                     lng={marker.lng}
                     data={marker}
+                    position={i}
                   />
                 )
               })}
