@@ -107,8 +107,13 @@ class OrderLogRow extends Component {
       </td>
       <td>
         {this.props.order.FinalPrice.toFixed(2)} <br />
-        <small>{this.props.order.Total} { this.props.order.Extra ? '+ 0.50' : '' }</small> <br />
-        <small>Κέρδος: { (this.props.order.Total * Constants.gainMultiplier + this.props.order.Extra * Constants.extraCharge).toFixed(2) }</small>
+        { this.props.order.ShopName !== 'Ψιλικά' &&
+          [
+          <small key={1}>{this.props.order.Total} { this.props.order.Extra ? '+ 0.50' : '' }</small>,
+           <br key={2}/>,
+          <small key={3}>Κέρδος: { (this.props.order.Total * Constants.gainMultiplier + this.props.order.Extra * Constants.extraCharge).toFixed(2) }</small>
+          ]
+        }
       </td>
       <td>
         <span>{dtime.format("HH:mm")}</span><br />
