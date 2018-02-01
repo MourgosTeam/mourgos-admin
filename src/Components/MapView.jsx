@@ -27,10 +27,27 @@ const handle = (props) => {
   );
 }
 class MyMarker extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false
+    };
+  }
+  toggle() {
+    this.setState({
+      open: !this.state.open
+    });
+  }
   render() {
     const pos = 'mymarker-' + (this.props.position || 0);
     return  <div className={`mymarker ${pos} ${this.props.data.color}`}>
-              <i class="fa fa-motorcycle"></i>
+              <i class="fa fa-motorcycle" onClick={() => this.toggle()}></i>
+              {this.state.open && 
+                <div className="marker-info">
+                  {this.props.data.position}
+
+                </div>
+              }
             </div>;
   }
 }
@@ -81,7 +98,7 @@ class MapView extends Component {
       user = parseInt(user, 10);
       let fromIndex = options[user] || 0;
       let toIndex = (fromIndex + 5) > marks[user].length ? marks[user].length : (fromIndex+5);
-      markers = markers.concat(marks[user].slice(fromIndex,toIndex));
+      markers = markers.concat(marks[user].slice(fromIndex,toIndex)).reverse();
       console.log(markers);
     }
     this.setState({
