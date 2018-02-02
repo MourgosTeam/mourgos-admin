@@ -4,7 +4,7 @@ import timeago from 'timeago.js';
 
 import './Dashboard.css';
 
-import OrderLogRow from './OrderLogRow.jsx'
+import OrderLogRow from './OrderLogRow.jsx';
 
 import Constants from '../helpers/Constants';
 

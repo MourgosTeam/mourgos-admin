@@ -70,6 +70,11 @@ function GetItWithToken(url){
          .then((response) => response.json());
 }
 
+function DeleteItWithToken(url){
+  const token = getToken();
+  return RequestIt(url, 'DELETE', null, token);
+}
+
 function PostIt(url, body){
   return RequestIt(url, 'POST', body);
 }
@@ -92,6 +97,7 @@ function Login(username, password){
 
 export default {
   clearToken,
+  DeleteItWithToken,
   GetIt,
   GetItWithToken,
   getToken,

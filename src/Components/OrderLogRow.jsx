@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import './Dashboard.css';
 
+import Net from '../helpers/net';
 import Constants from '../helpers/Constants';
 
 class LogRows extends Component {
@@ -61,6 +62,12 @@ class OrderLogRow extends Component {
     });
   }
 
+  deleted(id) {
+    if(window.confirm("Are you sure?")) {
+      Net.DeleteItWithToken('orders/'+id);
+    }
+  }
+
   render() {
     const BASEURL = "http://"+window.location.hostname + '/readytoeat/';
 
@@ -80,8 +87,8 @@ class OrderLogRow extends Component {
       <th scope="row"><a href={BASEURL + this.props.order.id} ref={(input) => { this.link = input; }} target="_new">{this.props.order.id}</a></th>
       <td>{this.props.order.ShopName}<br /><small>{this.props.order.ShopPhone}</small></td>
       <td>{this.props.order.Address}<br /><small>{this.props.order.Name}, {this.props.order.Koudouni}, {this.props.order.Phone}</small></td>
-      <td>
-        <select className="form-control" value={this.props.order.Status} 
+      <td class="row">
+        <select className="form-control col-9" value={this.props.order.Status} 
                 onChange={ (e) => this.props.onStatusChange(this.props.order.id, e.target.value)}
                 onClick={ (e) => e.stopPropagation() }>
           {
@@ -90,6 +97,7 @@ class OrderLogRow extends Component {
             )
           }
         </select>
+        <button className="btn btn-sm btn-danger col-3" onClick={(e) => {e.stopPropagation();this.deleted(this.props.order.id)}}>Delete</button>
         <small>
           {instate && 'for ' + parseInt(instate.getTime() / 1000 / 60, 10) + ' minutes'}
         </small>
@@ -106,7 +114,7 @@ class OrderLogRow extends Component {
         : ''}
       </td>
       <td>
-        {this.props.order.FinalPrice.toFixed(2)} <br />
+        { this.props.order.FinalPrice.toFixed(2) } <br />
         { this.props.order.ShopName !== 'Ψιλικά' &&
           [
           <small key={1}>{this.props.order.Total} { this.props.order.Extra ? '+ 0.50' : '' }</small>,
