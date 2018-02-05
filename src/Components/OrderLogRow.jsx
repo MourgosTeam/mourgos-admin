@@ -87,7 +87,7 @@ class OrderLogRow extends Component {
       <th scope="row"><a href={BASEURL + this.props.order.id} ref={(input) => { this.link = input; }} target="_new">{this.props.order.id}</a></th>
       <td>{this.props.order.ShopName}<br /><small>{this.props.order.ShopPhone}</small></td>
       <td>{this.props.order.Address}<br /><small>{this.props.order.Name}, {this.props.order.Koudouni}, {this.props.order.Phone}</small></td>
-      <td class="row">
+      <td className="row">
         <select className="form-control col-9" value={this.props.order.Status} 
                 onChange={ (e) => this.props.onStatusChange(this.props.order.id, e.target.value)}
                 onClick={ (e) => e.stopPropagation() }>

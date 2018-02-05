@@ -249,7 +249,10 @@ class Dashboard extends Component {
     super(props);
     this.socket = props.resolves.socket;
     this.socket.on('connect', () => this.loadOrders());
-    this.socket.on('new-order', () => this.loadOrders());
+    this.socket.on('new-order', () => {
+      this.playSound();
+      this.loadOrders();
+    });
     this.socket.on('assign-order', () => this.loadOrders());
     this.socket.on('update-order', () => this.loadOrders());
 
@@ -268,10 +271,21 @@ class Dashboard extends Component {
     this.loadCatalogues();
     this.loadCouriers();
     this.loadOrders();
+
+    // Load Sound 
+    this.audio = new Audio('/sounds/din.mp3');
   }
   
   componentDidUpdate(){
     timeago().render(document.querySelectorAll('.need_to_be_rendered'));
+  }
+
+  playSound() {
+    if(this.audio.canPlayType('audio/mp3')) {
+      this.audio.play();
+    } else {
+      console.log("NOT ")
+    }
   }
 
   mixLogs = (orders, logs) => {
