@@ -48,6 +48,12 @@ class Campaigns extends Component {
     });
   }
 
+  deleted(id, name) {
+    if(window.confirm("Are you sure you want to delete campaign : "+ name +" ?")) {
+      Net.DeleteItWithToken('campaigns/'+id).then(() => window.location.href = window.location.href);
+    }
+  }
+
   render() {
     return (
       <div>
@@ -68,7 +74,14 @@ class Campaigns extends Component {
                 <td>{campaign.Name}</td>
 
                 <td><input type="text" id="Formula" defaultValue={campaign.Formula} onBlur={(e) => this.changeCampaign(campaign.id, e)} /></td>
-                <td>{campaign.Hashtag}</td>
+                <td className="row">
+                  <div className="col">
+                    {campaign.Hashtag}
+                  </div>
+                  <div className="col">
+                    <button className="btn btn-sm btn-danger col-3" onClick={(e) => {e.stopPropagation();this.deleted(campaign.id,campaign.Hashtag)}}>Delete</button>
+                  </div>
+                </td>
                 <td>{campaign.CurrentUsages} / <input type="text" id="MaxUsages" placeholder="" defaultValue={campaign.MaxUsages} onBlur={(e) => this.changeCampaign(campaign.id, e)} /></td>
               </tr>
           )}
