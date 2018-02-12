@@ -97,14 +97,13 @@ class Template extends Component {
   updateWH = () => {
     const fWH = this.state.fvalue;
     const tWH = this.state.tvalue;
-    Net.PostItWithToken('globals/change/workingHours', { value: fWH+"-"+tWH }).
-    then(() => {
+    Net.PostItWithToken('globals/change/workingHours', { value: fWH+"-"+tWH })
+    .then(() => {
       window.location.href = window.location.href;
     });
   }
 
   render() {
-    const whours = this.state.workingHours.split("-");
     return (
       <div>
         <ul className="nav">
