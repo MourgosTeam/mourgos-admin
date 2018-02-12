@@ -6,3 +6,11 @@
 .nav-item{
 	cursor: pointer;
 }
+
+.nav-item span {
+	line-height: 30px;
+}
+
+.timetable-input {
+	width: 50px;
+}

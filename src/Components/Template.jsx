@@ -12,9 +12,22 @@ class Template extends Component {
 
     this.state = {
       isSiteOpen: false,
-      isSiteProblem: false
+      isSiteProblem: false,
+      workingHours: '',
+      fvalue: '',
+      tvalue: ''
     };
 
+
+    Net.GetItWithToken('globals/MourgosWorkingHours').then((data) => {
+      const value = data.Value;
+      const arr = value.split('-');
+      this.setState({
+        workingHours: value,
+        fvalue: arr[0],
+        tvalue: arr[1]
+      });
+    });
 
     Net.GetItWithToken('globals/MourgosIsLive').then((data) => {
       this.setState({
@@ -81,7 +94,17 @@ class Template extends Component {
     });
   }
 
+  updateWH = () => {
+    const fWH = this.state.fvalue;
+    const tWH = this.state.tvalue;
+    Net.PostItWithToken('globals/change/workingHours', { value: fWH+"-"+tWH }).
+    then(() => {
+      window.location.href = window.location.href;
+    });
+  }
+
   render() {
+    const whours = this.state.workingHours.split("-");
     return (
       <div>
         <ul className="nav">
@@ -115,7 +138,7 @@ class Template extends Component {
                      checked={this.state.isSiteOpen}
                      value={this.state.isSiteOpen ? 'on' : 'off'} />
               <span className="custom-control-indicator"></span>
-              <span className="custom-control-description">Ο μουργος ειναι {this.state.isSiteOpen ? 'ανοιχτός':'κλειστός'}!</span>
+              <span className="custom-control-description">{this.state.isSiteOpen ? 'Μόνιμα ανοιχτός':'Ωράριο'}!</span>
             </label>
           </li>
           <li style={{padding: 8}} className="nav-item">
@@ -128,6 +151,14 @@ class Template extends Component {
                      value={this.state.isSiteProblem ? 'on' : 'off'} />
               <span className="custom-control-indicator"></span>
               <span className="custom-control-description">Ο μουργος {this.state.isSiteProblem ? '':'δεν'} εχει πρόβλημα!</span>
+            </label>
+          </li>
+          <li style={{padding: 8}} className="nav-item">
+            <label className="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0">
+              <span className="custom-control-description">Ωράριο: {this.state.workingHours}</span>
+              <input type="text" className="timetable-input" value={this.state.fvalue} onChange={(e) => this.setState({ fvalue: e.target.value })} /> - 
+              <input type="text" className="timetable-input" value={this.state.tvalue} onChange={(e) => this.setState({ tvalue: e.target.value })} />
+              <button className="btn btn-sm" onClick={ () => this.updateWH() }>Αλλαγή</button>
             </label>
           </li>
         </ul>
