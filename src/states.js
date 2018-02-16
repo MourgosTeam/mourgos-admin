@@ -7,6 +7,7 @@ import Users from './Components/Users.jsx'
 import ImportView from './Components/ImportView.jsx'
 import Campaigns from './Components/Campaigns.jsx'
 import MapView from './Components/MapView.jsx'
+import Summaries from './Components/Summaries.jsx'
 
 export default [
 {
@@ -75,6 +76,11 @@ export default [
   name : 'home.map',
   url  : '/map',
   component: MapView
+},
+{
+  name : 'home.summaries',
+  url  : '/summaries',
+  component: Summaries
 }
 // {
 //     token: "catalogue",

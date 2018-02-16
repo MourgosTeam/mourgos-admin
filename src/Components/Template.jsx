@@ -126,6 +126,9 @@ class Template extends Component {
             <span className="nav-link" onClick={ () => this.goTo('home.users')}>Users</span>
           </li>
           <li className="nav-item">
+            <span className="nav-link" onClick={ () => this.goTo('home.summaries')}>Ποσά</span>
+          </li>
+          <li className="nav-item">
             <span className="nav-link" onClick={this.logout}>Logout</span>
           </li>
           <li style={{padding: 8}} className="nav-item">
